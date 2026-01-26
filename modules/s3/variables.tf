@@ -15,3 +15,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "create_bucket" {
+  type        = bool
+  description = "Whether to create the bucket"
+  default     = true
+}

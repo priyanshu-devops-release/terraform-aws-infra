@@ -7,7 +7,7 @@ variable "enable_s3_bucket" {
 module "DEV_S3_PERSONAL_BACKUPS" {
   create_bucket = var.enable_s3_bucket == "true" ? true : false
   source = "../modules/s3"
-  bucket_id = "${var.environment}-s3-personal-backups-us-west-2"
+  bucket = "${var.environment}-s3-personal-backups-us-west-2"
   tags = {
     Environment = var.environment
   }
