@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "s3-bucket" {
-  bucket = var.bucket_name
+  bucket = var.bucket_id
   tags = merge(
     {
       terraform = "true"
