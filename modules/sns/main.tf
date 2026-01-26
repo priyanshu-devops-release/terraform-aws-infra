@@ -1,4 +1,4 @@
-resource "aws_sns_topic" "sns-topic" {
-  name = var.sns_topic_name
-  tags = var.tags
-}
+# resource "aws_sns_topic" "sns-topic" {
+#   sns_topic_arn  = var.env
+#   tags = var.tags
+# }
