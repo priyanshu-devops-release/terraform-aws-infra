@@ -28,7 +28,7 @@ jobs:
     - name: Configure AWS
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
+        role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
         aws-region: ${{ vars.AWS_REGION }}
 
     - name: Terraform Validate
@@ -52,7 +52,7 @@ jobs:
     - name: Configure AWS
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
+        role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
         aws-region: ${{ vars.AWS_REGION }}
 
     - name: Terraform Plan
@@ -76,7 +76,7 @@ jobs:
     - name: Configure AWS
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
+        role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
         aws-region: ${{ vars.AWS_REGION }}
 
     - name: Terraform Apply
