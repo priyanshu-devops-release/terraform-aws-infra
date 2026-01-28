@@ -78,7 +78,7 @@ jobs:
 
     - name: Terraform Init & Plan
       run: |
-        terraform init -reconfigure
+        terraform init -upgrade -backend-config=environments/dev/dev-remotestate.conf
         terraform plan \
           -var-file=../environments/dev/dev.tfvars \
           -out=dev-tfplan
@@ -121,5 +121,5 @@ jobs:
 
     - name: Terraform Init & Apply
       run: |
-        terraform init -reconfigure
+        terraform init -upgrade -backend-config=environments/dev/dev-remotestate.conf
         terraform apply dev-tfplan
