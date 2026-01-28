@@ -48,7 +48,7 @@ jobs:
         aws-region: ${{ vars.AWS_REGION }}
     - name: Terraform Init
       run: |
-        terraform init -upgrade -backend-config=environments/dev/dev-remotestate.conf
+        terraform init -upgrade -backend-config=../environments/dev/dev-remotestate.conf
 #        terraform workspace select dev || terraform workspace new dev
 
     - name: Terraform Validate
@@ -78,7 +78,7 @@ jobs:
 
     - name: Terraform Init & Plan
       run: |
-        terraform init -upgrade -backend-config=environments/dev/dev-remotestate.conf
+        terraform init -upgrade -backend-config=../environments/dev/dev-remotestate.conf
         terraform plan \
           -var-file=../environments/dev/dev.tfvars \
           -out=dev-tfplan
@@ -121,5 +121,5 @@ jobs:
 
     - name: Terraform Init & Apply
       run: |
-        terraform init -upgrade -backend-config=environments/dev/dev-remotestate.conf
+        terraform init -upgrade -backend-config=../environments/dev/dev-remotestate.conf
         terraform apply dev-tfplan
