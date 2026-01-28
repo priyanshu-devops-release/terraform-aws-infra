@@ -1,7 +1,7 @@
 # s3 Bucket for personal backups outputs
-output "DEV_S3_PERSONAL_BACKUPS" {
-  value       = module.DEV_S3_PERSONAL_BACKUPS.bucket_id
-}
+# output "DEV_S3_PERSONAL_BACKUPS" {
+#   value       = module.DEV_S3_PERSONAL_BACKUPS.bucket_id
+# }
 
 # # SNS Topic ARN output
 # output "DEV_SNS_TOPIC_ARN" {

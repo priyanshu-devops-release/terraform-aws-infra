@@ -1,17 +1,17 @@
-variable "enable_s3_bucket" {
-  type        = string
-  default     = "true"
-  description = "Enable S3 bucket creation"
-}
+# variable "enable_s3_bucket" {
+#   type        = string
+#   default     = "true"
+#   description = "Enable S3 bucket creation"
+# }
 
-module "DEV_S3_PERSONAL_BACKUPS" {
-  create_bucket = var.enable_s3_bucket == "true" ? true : false
-  source = "../modules/s3"
-  bucket_id = "${var.environment}-s3-personal-backups-us-west-2"
-  tags = {
-    Environment = var.environment
-  }
-}
+# module "DEV_S3_PERSONAL_BACKUPS" {
+#   create_bucket = var.enable_s3_bucket == "true" ? true : false
+#   source = "../modules/s3"
+#   bucket_id = "${var.environment}-s3-personal-backups-us-west-2"
+#   tags = {
+#     Environment = var.environment
+#   }
+# }
 
 # module "DEV_S3_PERSONAL_BACKUPS_EVENT_NOTIFICATION" {
 #   source = "../modules/s3_notification"
