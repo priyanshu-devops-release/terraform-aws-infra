@@ -6,6 +6,11 @@ on:
       - master
 
   workflow_dispatch:
+    inputs:
+      apply:
+        description: "Apply Terraform changes? (true/false)"
+        required: true
+        default: "false"
 
 permissions:
   id-token: write
@@ -21,23 +26,25 @@ jobs:
         working-directory: dev-standard
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.14.3
-    - name: Configure AWS credentials (OIDC)
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
-        aws-region: ${{ vars.AWS_REGION }}
-    - name: Terraform Init
-      run: |
-        terraform init  -reconfigure
-        terraform workspace select dev || terraform workspace new dev
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.14.3
 
-    - name: Terraform Validate
-      run: terraform validate
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Terraform Init
+        run: |
+          terraform init -reconfigure
+          terraform workspace select dev || terraform workspace new dev
+
+      - name: Terraform Validate
+        run: terraform validate
 
   plan:
     name: Terraform Plan
@@ -50,35 +57,39 @@ jobs:
         working-directory: dev-standard
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.14.3
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.14.3
 
-    - name: Configure AWS credentials (OIDC)
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
-        aws-region: ${{ vars.AWS_REGION }}
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
 
-    - name: Terraform Init & Plan
-      run: |
-        terraform init -reconfigure
-        terraform plan \
-          -var-file=../environments/dev/dev.tfvars \
-          -out=dev-tfplan
+      - name: Terraform Init & Plan
+        run: |
+          terraform init -reconfigure
+          terraform plan \
+            -var-file=../environments/dev/dev.tfvars \
+            -out=dev-tfplan
 
-    - uses: actions/upload-artifact@v4
-      with:
-        name: dev-tfplan
-        path: dev-standard/dev-tfplan
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dev-tfplan
+          path: dev-standard/dev-tfplan
 
   apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
     needs: plan
-    if: github.event_name == 'workflow_dispatch'
+
+    # 🔐 HARD SAFETY GATE (MOST IMPORTANT FIX)
+    if: github.event.inputs.apply == 'true'
+
+    # 🔐 Manual approval (configure reviewers in UI)
     environment: terraform-apply-dev
 
     defaults:
@@ -86,24 +97,24 @@ jobs:
         working-directory: dev-standard
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.14.3
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.14.3
 
-    - name: Configure AWS credentials (OIDC)
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
-        aws-region: ${{ vars.AWS_REGION }}
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
 
-    - uses: actions/download-artifact@v4
-      with:
-        name: dev-tfplan
-        path: dev-standard
+      - uses: actions/download-artifact@v4
+        with:
+          name: dev-tfplan
+          path: dev-standard
 
-    - name: Terraform Init & Apply
-      run: |
-        terraform init -reconfigure
-        terraform apply dev-tfplan
+      - name: Terraform Init & Apply
+        run: |
+          terraform init -reconfigure
+          terraform apply dev-tfplan
