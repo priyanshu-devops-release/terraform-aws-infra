@@ -1,16 +1,7 @@
 name: Terraform Actions
 
 on:
-  push:
-    branches:
-      - master
-
   workflow_dispatch:
-    inputs:
-      apply:
-        description: "Apply Terraform changes? (true/false)"
-        required: true
-        default: "false"
 
 permissions:
   id-token: write
@@ -50,7 +41,6 @@ jobs:
     name: Terraform Plan
     runs-on: ubuntu-latest
     needs: validate
-    if: github.event_name == 'workflow_dispatch'
 
     defaults:
       run:
@@ -86,10 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: plan
 
-    # 🔐 HARD SAFETY GATE (MOST IMPORTANT FIX)
-    if: github.event.inputs.apply == 'true'
-
-    # 🔐 Manual approval (configure reviewers in UI)
+    # 🔐 THIS is what creates the approval prompt
     environment: terraform-apply-dev
 
     defaults:
