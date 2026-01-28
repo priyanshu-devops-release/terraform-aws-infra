@@ -6,6 +6,24 @@ on:
       - master
 
   workflow_dispatch:
+    inputs:
+      command:
+        description: 'Terraform command'
+        required: true
+        type: choice
+        options:
+        - plan
+        - apply
+        default: plan
+      environment:
+        description: 'Environment'
+        required: true
+        type: choice
+        options:
+        - dev
+        - staging
+        - prod
+        default: dev
 
 permissions:
   id-token: write
@@ -34,7 +52,7 @@ jobs:
     - name: Terraform Init
       run: |
         terraform init  -reconfigure
-        terraform workspace select dev || terraform workspace new dev
+#        terraform workspace select dev || terraform workspace new dev
 
     - name: Terraform Validate
       run: terraform validate
@@ -43,8 +61,7 @@ jobs:
     name: Terraform Plan
     runs-on: ubuntu-latest
     needs: validate
-    if: github.event_name == 'workflow_dispatch'
-
+    if: (github.event_name == 'workflow_dispatch' && github.event.inputs.command == 'plan')
     defaults:
       run:
         working-directory: dev-standard
@@ -78,7 +95,7 @@ jobs:
     name: Terraform Apply
     runs-on: ubuntu-latest
     needs: plan
-    if: github.event_name == 'workflow_dispatch'
+    if: (github.event_name == 'workflow_dispatch' && github.event.inputs.command == 'apply')
     environment: terraform-apply-dev
 
     defaults:
