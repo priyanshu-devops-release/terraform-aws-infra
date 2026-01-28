@@ -48,7 +48,7 @@ jobs:
         aws-region: ${{ vars.AWS_REGION }}
     - name: Terraform Init
       run: |
-        terraform init  -reconfigure
+        terraform init -upgrade -backend-config=environments/dev/dev-remotestate.conf
 #        terraform workspace select dev || terraform workspace new dev
 
     - name: Terraform Validate
