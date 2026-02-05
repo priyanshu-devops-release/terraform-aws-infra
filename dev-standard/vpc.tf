@@ -1,15 +1,10 @@
 module "DEV-VPC" {
   source = "../modules/vpc"
-
-  vpc_name        = "dev-vpc"
-  vpc_cidr        = "10.0.0.0/16"
-  azs             = ["us-west-2a", "us-west-2b"]
-
-  public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
-  private_subnets = ["10.0.101.0/24", "10.0.102.0/24"]
-
-  enable_nat_gateway = true
-
+  vpc_name        = var.environment
+  vpc_cidr        = var.vpc_cidr
+  azs             = var.availability_zones
+  public_subnets  = var.public_subnets
+  private_subnets = var.private_subnets
   tags = {
     Environment = var.environment
     Terraform   = "true"

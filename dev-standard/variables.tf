@@ -10,3 +10,22 @@ variable "environment" {
   description = "The deployment environment"
   default     = "dev"
 }
+variable "availability_zones" {
+  description = "List of availability zones to use for subnets"
+  type        = list(string)
+  default     = []
+}
+variable "vpc_cidr" {
+  description = "The CIDR block for the VPC"
+  default     = ""
+}
+variable "public_subnets" {
+  description = "List of CIDR blocks for public subnets"
+  type        = list(string)
+  default     = []
+}
+variable "private_subnets" {
+  description = "List of CIDR blocks for private subnets"
+  type        = list(string)
+  default     = []
+}
