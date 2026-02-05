@@ -61,7 +61,6 @@ resource "aws_eip" "nat" {
   // Name: aws_eip.nat
   // Purpose: Allocates an Elastic IP for the NAT Gateway
   count  = var.enable_nat_gateway ? 1 : 0
-  domain = "vpc"
 
   tags = merge(
     { Name = "${var.vpc_name}-nat-eip" },
