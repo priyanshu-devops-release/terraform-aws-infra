@@ -1,4 +1,4 @@
-name: Terraform Actions
+name: Terraform IAC App Stack
 
 on:
   push:
