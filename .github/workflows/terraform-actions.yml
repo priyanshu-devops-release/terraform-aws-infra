@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       apply:
-        description: 'Terraform Apply'
+        description: 'Terraform Deploy'
         required: true
         type: boolean
         default: false
