@@ -1,6 +1,6 @@
-module "DEV-VPC" {
+module "DEV_VPC" {
   source = "../modules/vpc"
-  vpc_name        = var.environment
+  vpc_name        = "${var.environment}-vpc"
   vpc_id          = var.vpc_id
   vpc_cidr        = var.vpc_cidr
   azs             = var.availability_zones
@@ -11,7 +11,7 @@ module "DEV-VPC" {
     Terraform   = "true"
   }
 }
-output "DEV-VPC" {
-  value       = module.DEV-VPC.vpc_name
+output "DEV_VPC" {
+  value       = module.DEV_VPC.vpc_name
 }
 
