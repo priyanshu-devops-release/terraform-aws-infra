@@ -29,3 +29,11 @@ variable "private_subnets" {
   type        = list(string)
   default     = []
 }
+
+variable "cluster_name" {
+  default = "dev-eks-cluster"
+}
+
+variable "cluster_version" {
+  default = "1.29"
+}
