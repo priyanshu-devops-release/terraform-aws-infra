@@ -6,6 +6,10 @@ variable "vpc_name" {
   description = "The name of the VPC"
   default     = "default-vpc"
 }
+variable "vpc_id" {
+  description = "ID of the VPC"
+  type        = string
+}
 variable "environment" {
   description = "The deployment environment"
   default     = "dev"
