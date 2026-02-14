@@ -8,5 +8,5 @@
 #   value = module.DEV_SNS.sns_topic_arn
 # }
 output "DEV_VPC" {
-  value       = module.DEV_VPC.vpc_name
+  value       = module.DEV_VPC.this_is_vpc_name
 }
