@@ -22,7 +22,7 @@ resource "aws_internet_gateway" "this" {
   )
 }
 
-resource "aws_subnet" "public" {
+resource "aws_subnet" "public_subnets" {
   // Name: aws_subnet.public
   // Purpose: Creates public subnets in the VPC
   count                   = length(var.public_subnets)
@@ -40,7 +40,7 @@ resource "aws_subnet" "public" {
   )
 }
 
-resource "aws_subnet" "private" {
+resource "aws_subnet" "private_subnets" {
   // Name: aws_subnet.private
   // Purpose: Creates private subnets in the VPC
   count             = length(var.private_subnets)
