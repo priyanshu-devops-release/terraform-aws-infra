@@ -11,7 +11,5 @@ module "DEV_VPC" {
     Terraform   = "true"
   }
 }
-output "DEV_VPC" {
-  value       = module.DEV_VPC.vpc_name
-}
+
 
