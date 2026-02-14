@@ -115,7 +115,7 @@ resource "aws_route_table" "private" {
   )
 }
 
-resource "aws_route_table_association" "public" {
+resource "aws_route_table_association" "public_subnets" {
   // Name: aws_route_table_association.public
   // Purpose: Associates public subnets with the public route table
   count          = length(aws_subnet.public_subnets)
@@ -123,7 +123,7 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public_subnets.id
 }
 
-resource "aws_route_table_association" "private" {
+resource "aws_route_table_association" "private_subnets" {
   // Name: aws_route_table_association.private
   // Purpose: Associates private subnets with the private route table
   count          = length(aws_subnet.private_subnets)
