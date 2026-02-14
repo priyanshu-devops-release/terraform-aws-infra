@@ -8,9 +8,9 @@
 #   value = module.DEV_SNS.sns_topic_arn
 # }
 output "DEV_VPC" {
-  value       = module.DEV_VPC.this_is_vpc_name
+  value = module.DEV_VPC.vpc_id
 }
 
 output "DEV_EKS" {
-  value = module.DEV_EKS.this_is_cluster_name
+  value = module.DEV_EKS.cluster_name
 }
