@@ -1,23 +1,23 @@
-output "vpc_id" {
+output "this_is_vpc_id" {
   value = aws_vpc.this.id
 }
 
-output "vpc_name" {
+output "this_is_vpc_name" {
   value = aws_vpc.this.name
 }
 
-output "public_subnet_ids" {
+output "this_is_public_subnet_ids" {
   value = aws_subnet.public[*].id
 }
 
-output "private_subnet_ids" {
+output "this_is_private_subnet_ids" {
   value = aws_subnet.private[*].id
 }
 
-output "igw_id" {
+output "this_is_igw_id" {
   value = aws_internet_gateway.this.id
 }
 
-output "nat_gateway_id" {
+output "this_is_snat_gateway_id" {
   value = try(aws_nat_gateway.this[0].id, null)
 }
