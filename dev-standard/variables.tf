@@ -19,12 +19,12 @@ variable "vpc_cidr" {
   description = "The CIDR block for the VPC"
   default     = ""
 }
-variable "public_subnets" {
+variable "public" {
   description = "List of CIDR blocks for public subnets"
   type        = list(string)
   default     = []
 }
-variable "private_subnets" {
+variable "private" {
   description = "List of CIDR blocks for private subnets"
   type        = list(string)
   default     = []

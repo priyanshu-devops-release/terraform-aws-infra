@@ -15,12 +15,12 @@ variable "azs" {
   type        = list(string)
 }
 
-variable "public_subnets" {
+variable "public" {
   description = "Public subnet CIDRs"
   type        = list(string)
 }
 
-variable "private_subnets" {
+variable "private" {
   description = "Private subnet CIDRs"
   type        = list(string)
 }
