@@ -73,7 +73,7 @@ resource "aws_nat_gateway" "this" {
   // Purpose: Creates a NAT Gateway for outbound internet access from private subnets
   count         = var.enable_nat_gateway ? 1 : 0
   allocation_id = aws_eip.nat[0].id
-  subnet_id     = aws_subnet.public[0].id
+  subnet_id     = aws_subnet.public_subnets[0].id
 
   tags = merge(
     { Name = "${var.name}-nat" },
@@ -118,16 +118,16 @@ resource "aws_route_table" "private" {
 resource "aws_route_table_association" "public" {
   // Name: aws_route_table_association.public
   // Purpose: Associates public subnets with the public route table
-  count          = length(aws_subnet.public)
-  subnet_id      = aws_subnet.public[count.index].id
-  route_table_id = aws_route_table.public.id
+  count          = length(aws_subnet.public_subnets)
+  subnet_id      = aws_subnet.public_subnets[count.index].id
+  route_table_id = aws_route_table.public_subnets.id
 }
 
 resource "aws_route_table_association" "private" {
   // Name: aws_route_table_association.private
   // Purpose: Associates private subnets with the private route table
-  count          = length(aws_subnet.private)
-  subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private.id
+  count          = length(aws_subnet.private_subnets)
+  subnet_id      = aws_subnet.private_subnets[count.index].id
+  route_table_id = aws_route_table.private_subnets.id
 }
 

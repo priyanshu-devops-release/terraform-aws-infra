@@ -7,11 +7,11 @@ output "this_is_vpc_name" {
 }
 
 output "this_is_public_subnet_ids" {
-  value = aws_subnet.public[*].id
+  value = aws_subnet.public_subnets[*].id
 }
 
 output "this_is_private_subnet_ids" {
-  value = aws_subnet.private[*].id
+  value = aws_subnet.private_subnets[*].id
 }
 
 output "this_is_igw_id" {
