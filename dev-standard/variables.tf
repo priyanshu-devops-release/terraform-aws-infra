@@ -2,10 +2,6 @@ variable "aws_region" {
   description = "The AWS region to deploy resources"
   default     = "us-west-2"
 }
-variable "vpc_id" {
-  description = "ID of the VPC"
-  type        = string
-}
 variable "environment" {
   description = "The deployment environment"
   default     = "dev"
