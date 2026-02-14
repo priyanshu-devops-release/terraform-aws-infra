@@ -3,7 +3,8 @@ module "DEV_EKS" {
   cluster_name       = var.cluster_name
   cluster_version    = var.cluster_version
   vpc_id             = var.vpc_id
-  private_subnets = var.private_subnets
+  subnet_ids         = var.subnet_ids
+  private_subnets    = var.private_subnets
   vpc_cidr           = var.vpc_cidr
   azs                = var.availability_zones
 }
