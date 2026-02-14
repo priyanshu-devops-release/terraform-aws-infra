@@ -10,3 +10,7 @@
 output "DEV_VPC" {
   value       = module.DEV_VPC.this_is_vpc_name
 }
+
+output "DEV_EKS" {
+  value = module.DEV_EKS.this_is_cluster_name
+}

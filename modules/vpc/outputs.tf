@@ -3,7 +3,7 @@ output "this_is_vpc_id" {
 }
 
 output "this_is_vpc_name" {
-  value = aws_vpc.this.name
+  value = try(aws_vpc.this.tags["Name"], aws_vpc.this.tags_all["Name"], "")
 }
 
 output "this_is_public_subnet_ids" {

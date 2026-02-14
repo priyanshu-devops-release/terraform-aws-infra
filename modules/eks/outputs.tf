@@ -1,7 +1,7 @@
-output "cluster_name" {
+output "this_is_cluster_name" {
   value = aws_eks_cluster.eks.name
 }
 
-output "cluster_endpoint" {
+output "this_is_cluster_endpoint" {
   value = aws_eks_cluster.eks.endpoint
 }
