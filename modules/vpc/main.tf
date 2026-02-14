@@ -6,7 +6,7 @@ resource "aws_vpc" "this" {
   enable_dns_hostnames = true
 
   tags = merge(
-    { Name = var.vpc_name },
+    { Name = var.name },
     var.tags
   )
 }
@@ -17,7 +17,7 @@ resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
 
   tags = merge(
-    { Name = "${var.vpc_name}-igw" },
+    { Name = "${var.name}-igw" },
     var.tags
   )
 }
@@ -33,7 +33,7 @@ resource "aws_subnet" "public" {
 
   tags = merge(
     {
-      Name = "${var.vpc_name}-public-${count.index + 1}"
+      Name = "${var.name}-public-${count.index + 1}"
       Tier = "public"
     },
     var.tags
@@ -50,7 +50,7 @@ resource "aws_subnet" "private" {
 
   tags = merge(
     {
-      Name = "${var.vpc_name}-private-${count.index + 1}"
+      Name = "${var.name}-private-${count.index + 1}"
       Tier = "private"
     },
     var.tags
@@ -63,7 +63,7 @@ resource "aws_eip" "nat" {
   count  = var.enable_nat_gateway ? 1 : 0
 
   tags = merge(
-    { Name = "${var.vpc_name}-nat-eip" },
+    { Name = "${var.name}-nat-eip" },
     var.tags
   )
 }
@@ -76,7 +76,7 @@ resource "aws_nat_gateway" "this" {
   subnet_id     = aws_subnet.public[0].id
 
   tags = merge(
-    { Name = "${var.vpc_name}-nat" },
+    { Name = "${var.name}-nat" },
     var.tags
   )
 
@@ -94,7 +94,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = merge(
-    { Name = "${var.vpc_name}-public-rt" },
+    { Name = "${var.name}-public-rt" },
     var.tags
   )
 }
@@ -110,7 +110,7 @@ resource "aws_route_table" "private" {
   }
 
   tags = merge(
-    { Name = "${var.vpc_name}-private-rt" },
+    { Name = "${var.name}-private-rt" },
     var.tags
   )
 }
