@@ -15,6 +15,7 @@ variable "security_group_id" {
 }
 variable "create_load_balancer" {
   type    = bool
+  default = false
 }
 
 variable "target_port" {
