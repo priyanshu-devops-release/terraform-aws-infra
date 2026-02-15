@@ -15,9 +15,9 @@ output "DEV_EC2" {
   value = module.DEV_EC2.private_ip
 }
 
-output "DEV_SG" {
-  value = module.DEV_SG.security_group_id
-}
+# output "DEV_SG" {
+#   value = module.DEV_SG.security_group_id
+# }
 output "DEV_ALB_SG" {
   value = module.DEV_ALB_SG.security_group_id
 }
