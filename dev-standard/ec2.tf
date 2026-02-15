@@ -1,6 +1,6 @@
 module "DEV_EC2" {
-  source = "../modules/ec2"
-  ami_id = var.ami_id
+  source            = "../modules/ec2"
+  ami_id            = var.ami_id
   instance_name     = "${var.environment}-instance"
   instance_type     = var.instance_type
   subnet_id         = module.DEV_VPC.private_subnet_ids[0]

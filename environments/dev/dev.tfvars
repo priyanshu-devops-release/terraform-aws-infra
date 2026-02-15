@@ -17,4 +17,4 @@ cluster_name = "pb-dev-eks-cluster"
 # EC2 configuration
 key_name = "pb-dev-key"
 instance_type = "t2.micro"
-ami_id = "ami-02b86da1e539b4dd0" # Amazon Linux 2 AMI (HVM), SSD Volume Type
+ami_id = "ami-04144e1d88f3aa3a0" # Amazon Linux 2 AMI (HVM), SSD Volume Type
