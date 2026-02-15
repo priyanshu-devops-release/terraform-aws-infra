@@ -20,7 +20,7 @@ output "DEV_SG" {
 }
 output "DEV_ALB_SG" {
   value = module.DEV_ALB_SG.security_group_id
-# }
+}
 # output "DEV_EKS" {
 #   value = module.DEV_EKS.cluster_name
 # }
