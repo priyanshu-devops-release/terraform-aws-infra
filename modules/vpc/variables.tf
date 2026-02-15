@@ -13,6 +13,9 @@ variable "private_subnet_cidrs" {
 variable "availability_zones" {
   type = list(string)
 }
+variable "create_vpc" {
+  type = bool
+}
 
 variable "tags" {
   type = map(string)

@@ -19,7 +19,6 @@ variable "instance_type" {
 }
 variable "create" {
   type    = bool
-  default = true
 }
 # variable "ami_id" {
 #   description = "AMI ID for the EC2 instance"

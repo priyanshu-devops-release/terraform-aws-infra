@@ -1,6 +1,6 @@
 variable "dev_alb" {
   type    = bool
-  default = true
+  default = false
 }
 module "DEV_ALB" {
   source = "../modules/load-balancer"

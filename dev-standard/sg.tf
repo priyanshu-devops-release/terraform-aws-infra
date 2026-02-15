@@ -1,6 +1,6 @@
 variable "dev_alb_sg" {
   type    = bool
-  default = true
+  default = false
 }
 # # module "DEV_SG" {
 # #   source      = "../modules/security-group"

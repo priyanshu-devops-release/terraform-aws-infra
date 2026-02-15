@@ -1,6 +1,6 @@
 variable "dev_ec2" {
   type    = bool
-  default = true
+  default = false
 }
 
 module "DEV_EC2" {

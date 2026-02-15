@@ -11,7 +11,6 @@ variable "vpc_id" {
 }
 variable "create_security_group" {
   type    = bool
-  default = true
 }
 variable "ingress_rules" {
   description = "List of ingress rules"
