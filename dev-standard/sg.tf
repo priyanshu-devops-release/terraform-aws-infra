@@ -32,7 +32,7 @@ module "DEV_SG" {
 }
 
 module "DEV_ALB_SG" {
-  source      = "./modules/security-group"
+  source      = "../modules/security-group"
   name        = "${var.environment}-alb-sg"
   description = "ALB Security Group"
   vpc_id      = module.DEV_VPC.vpc_id
