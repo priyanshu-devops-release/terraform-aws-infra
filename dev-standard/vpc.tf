@@ -4,10 +4,10 @@ variable "dev_vpc" {
 }
 
 module "DEV_VPC" {
-  source = "../modules/vpc"
-  create_vpc = var.dev_vpc ? true : false
+  source               = "../modules/vpc"
+  create_vpc           = var.dev_vpc ? true : false
   vpc_cidr             = var.vpc_cidr
-  public_subnet_cidrs  = var.public_subnets
+  public_subnet_cidrs  = var.public_subnets 
   private_subnet_cidrs = var.private_subnets
   availability_zones   = var.availability_zones
   tags = {
