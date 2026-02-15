@@ -19,8 +19,7 @@ resource "aws_internet_gateway" "igw" {
 }
 
 resource "aws_subnet" "public" {
-  count = var.create_vpc ? 1 : 0
-  count                   = length(var.public_subnet_cidrs)
+  count = var.create_vpc ? 1 : 0 && length(var.public_subnet_cidrs) > 0
   vpc_id                  = aws_vpc.this.id
   cidr_block              = var.public_subnet_cidrs[count.index]
   availability_zone       = var.availability_zones[count.index]
@@ -35,8 +34,7 @@ resource "aws_subnet" "public" {
 }
 
 resource "aws_subnet" "private" {
-  count = var.create_vpc ? 1 : 0
-  count             = length(var.private_subnet_cidrs)
+  count = var.create_vpc ? 1 : 0 && length(var.private_subnet_cidrs) > 0
   vpc_id            = aws_vpc.this.id
   cidr_block        = var.private_subnet_cidrs[count.index]
   availability_zone = var.availability_zones[count.index]
