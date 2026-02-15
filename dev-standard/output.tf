@@ -10,7 +10,7 @@
 output "DEV_VPC" {
   value = module.DEV_VPC.vpc_id
 }
-output "DEV_VPC_PRIVATE_SUBNETS" {
+output "DEV_VPC" {
   value = module.DEV_VPC.private_subnets
 }
 
