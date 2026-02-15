@@ -18,7 +18,7 @@ cluster_name = "pb-dev-eks-cluster"
 # EC2 configuration
 dev_ec2 = true
 dev_alb = false
-dev_alb_sg = false
+dev_alb_sg = true
 dev_ec2_alb_sg = false
 key_name = "pb-dev-key"
 instance_type = "t2.micro"
