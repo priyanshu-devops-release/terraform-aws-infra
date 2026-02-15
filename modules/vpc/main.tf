@@ -61,8 +61,7 @@ resource "aws_route" "internet" {
 }
 
 resource "aws_route_table_association" "public_assoc" {
-  count = var.create_vpc ? 1 : 0
-  count          = length(aws_subnet.public)
+  count = var.create_vpc ? 1 : 0 && length(aws_subnet.public) > 0
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
 }
@@ -74,8 +73,7 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table_association" "private_assoc" {
-  count = var.create_vpc ? 1 : 0
-  count          = length(aws_subnet.private)
+  count = var.create_vpc ? 1 : 0 && length(aws_subnet.private) > 0
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private.id
 }
