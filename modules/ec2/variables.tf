@@ -13,3 +13,7 @@ variable "key_name" {
 variable "tags" {
   type = map(string)
 }
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+}
