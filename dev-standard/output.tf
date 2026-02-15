@@ -11,6 +11,13 @@ output "DEV_VPC" {
   value = module.DEV_VPC.vpc_id
 }
 
+output "DEV_EC2" {
+  value = module.DEV_EC2.public_ip
+}
+
+output "DEV_SG" {
+  value = module.DEV_SG.security_group_id
+}
 # output "DEV_EKS" {
 #   value = module.DEV_EKS.cluster_name
 # }
