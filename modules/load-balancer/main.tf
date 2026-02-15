@@ -32,10 +32,10 @@ resource "aws_lb_target_group_attachment" "this" {
   port             = var.target_port
 }
 
-resource "aws_lb_listener" "https" {
+resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.this.arn
-  port              = 443
-  protocol          = "HTTPS"
+  port              = 8080
+  protocol          = "HTTP"
 
   default_action {
     type             = "forward"
