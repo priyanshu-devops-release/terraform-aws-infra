@@ -13,7 +13,7 @@ variable "subnet_ids" {
 variable "security_group_id" {
   type = string
 }
-variable "create" {
+variable "create_alb" {
   type    = bool
   default = false
 }
