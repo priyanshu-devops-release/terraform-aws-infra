@@ -17,3 +17,7 @@ variable "availability_zones" {
 variable "tags" {
   type = map(string)
 }
+variable "create" {
+  type    = bool
+  default = true
+}

@@ -1,3 +1,7 @@
+variable "dev_alb_sg" {
+  type    = bool
+  default = true
+}
 # # module "DEV_SG" {
 # #   source      = "../modules/security-group"
 # #   name        = "${var.environment}-devops-sg"
@@ -31,35 +35,36 @@
 # #   }
 # # }
 
-# module "DEV_ALB_SG" {
-#   source      = "../modules/security-group"
-#   name        = "${var.environment}-alb-sg"
-#   description = "ALB Security Group"
-#   vpc_id      = module.DEV_VPC.vpc_id
+module "DEV_ALB_SG" {
+  source      = "../modules/security-group"
+  create_security_group = var.dev_alb_sg ? true : false
+  name        = "${var.environment}-alb-sg"
+  description = "ALB Security Group"
+  vpc_id      = module.DEV_VPC.vpc_id
 
-#   ingress_rules = [
-#     {
-#       from_port   = 22
-#       to_port     = 22
-#       protocol    = "tcp"
-#       cidr_blocks = ["0.0.0.0/0"]
-#     },
-#     {
-#       from_port   = 8080
-#       to_port     = 8080
-#       protocol    = "tcp"
-#       cidr_blocks = ["0.0.0.0/0"]
-#     },
-#     {
-#       from_port   = 30007
-#       to_port     = 30007
-#       protocol    = "tcp"
-#       cidr_blocks = ["0.0.0.0/0"]
-#     }
-#   ]
+  ingress_rules = [
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      from_port   = 8080
+      to_port     = 8080
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      from_port   = 30007
+      to_port     = 30007
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  ]
 
-#   tags = {
-#     Environment = var.environment
-#     Terraform   = "true"
-#   }
-# }
+  tags = {
+    Environment = var.environment
+    Terraform   = "true"
+  }
+}

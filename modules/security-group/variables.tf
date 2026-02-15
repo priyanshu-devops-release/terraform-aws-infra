@@ -9,7 +9,10 @@ variable "description" {
 variable "vpc_id" {
   type = string
 }
-
+variable "create_security_group" {
+  type    = bool
+  default = true
+}
 variable "ingress_rules" {
   description = "List of ingress rules"
   type = list(object({

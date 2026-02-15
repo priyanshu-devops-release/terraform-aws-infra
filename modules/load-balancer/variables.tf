@@ -13,6 +13,10 @@ variable "subnet_ids" {
 variable "security_group_id" {
   type = string
 }
+variable "create_load_balancer" {
+  type    = bool
+  default = true
+}
 
 variable "target_port" {
   type = number
