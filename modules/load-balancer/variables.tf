@@ -13,7 +13,7 @@ variable "subnet_ids" {
 variable "security_group_id" {
   type = string
 }
-variable "create_load_balancer" {
+variable "create" {
   type    = bool
   default = false
 }
