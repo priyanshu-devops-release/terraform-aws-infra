@@ -7,5 +7,6 @@ module "DEV_EC2" {
 
   tags = {
     Environment = var.environment
+    Terraform   = "true"
   }
 }
