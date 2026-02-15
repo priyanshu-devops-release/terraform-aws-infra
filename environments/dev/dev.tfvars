@@ -1,3 +1,4 @@
+# AWS region for vpc
 aws_region = "us-west-2"
 vpc_name   = "dev-vpc"
 environment = "pb-dev"
@@ -8,5 +9,10 @@ availability_zones = ["us-west-2a", "us-west-2b"]
 vpc_cidr = "10.0.0.0/16"
 public_subnets= ["10.0.1.0/24", "10.0.2.0/24"]
 private_subnets = ["10.0.101.0/24", "10.0.102.0/24"]
+
+# EKS Cluster configuration
 cluster_version = "1.29"
 cluster_name = "pb-dev-eks-cluster"
+
+# EC2 configuration
+key_name = "pb-dev-key"
