@@ -11,7 +11,7 @@ output "DEV_VPC" {
   value = module.DEV_VPC.vpc_id
 }
 output "DEV_VPC" {
-  value = module.DEV_VPC.private_subnets
+  value = module.DEV_VPC.private_subnets[*]
 }
 
 output "DEV_EC2" {
