@@ -6,6 +6,8 @@ module "DEV_EC2" {
   subnet_id         = module.DEV_VPC.private_subnet_ids[0]
   security_group_id = module.DEV_ALB_SG.security_group_id
   key_name          = var.key_name
+  public_key        = file("src/dev-key.pub")
+
 
   tags = {
     Environment = var.environment
