@@ -3,7 +3,7 @@ module "DEV_EC2" {
   instance_name     = "${var.environment}-dev-instance"
   instance_type     = var.instance_type
   subnet_id         = module.DEV_VPC.private_subnet_ids[0]
-  security_group_id = module.DEV_SG.security_group_id
+  security_group_id = module.DEV_ALB_SG.security_group_id
   key_name          = var.key_name
 
   tags = {
