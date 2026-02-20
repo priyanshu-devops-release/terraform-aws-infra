@@ -1,8 +1,3 @@
-variable "pb_enable_dev_vpc" {
-  type    = bool
-  default = false
-}
-
 module "DEV_VPC" {
   source               = "../modules/vpc"
   create_vpc           = var.pb_enable_dev_vpc ? true : false
