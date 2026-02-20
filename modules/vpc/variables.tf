@@ -20,7 +20,7 @@ variable "create_vpc" {
 variable "tags" {
   type = map(string)
 }
-variable "create" {
+variable "create_vpc" {
   type    = bool
   default = true
 }
