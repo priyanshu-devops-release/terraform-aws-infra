@@ -60,12 +60,13 @@ jobs:
       with:
         payload: |
           {
+            "text": "Terraform workflow run for ${{ github.repository }} on branch ${{ github.ref_name }} finished with status: ${{ job.status }}.",
             "blocks": [
               {
                 "type": "header",
                 "text": {
                   "type": "plain_text",
-                  "text": "Terraform ${{ job.name }} - ${{ job.status }}",
+                  "text": "Terraform Validate - ${{ job.status }}",
                   "emoji": true
                 }
               },
@@ -173,12 +174,13 @@ jobs:
       with:
         payload: |
           {
+            "text": "Terraform workflow run for ${{ github.repository }} on branch ${{ github.ref_name }} finished with status: ${{ job.status }}.",
             "blocks": [
               {
                 "type": "header",
                 "text": {
                   "type": "plain_text",
-                  "text": "Terraform ${{ job.name }} - ${{ job.status }}",
+                  "text": "Terraform Plan - ${{ job.status }}",
                   "emoji": true
                 }
               },
@@ -287,12 +289,13 @@ jobs:
       with:
         payload: |
           {
+            "text": "Terraform workflow run for ${{ github.repository }} on branch ${{ github.ref_name }} finished with status: ${{ job.status }}.",
             "blocks": [
               {
                 "type": "header",
                 "text": {
                   "type": "plain_text",
-                  "text": "Terraform ${{ job.name }} - ${{ job.status }}",
+                  "text": "Terraform Apply - ${{ job.status }}",
                   "emoji": true
                 }
               },
