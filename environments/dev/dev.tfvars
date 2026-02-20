@@ -14,6 +14,7 @@ private_subnets = ["10.0.101.0/24", "10.0.102.0/24"]
 # EKS Cluster configuration
 cluster_version = "1.29"
 cluster_name = "pb-dev-eks-cluster"
+pb_enable_dev_eks = false
 
 # EC2 configuration
 dev_ec2 = true

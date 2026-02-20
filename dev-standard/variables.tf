@@ -48,6 +48,10 @@ variable "pb_enable_dev_vpc" {
   default = false
 }
 
+variable "pb_enable_dev_eks" {
+  type    = bool
+  default = false
+}
 # variable "ami_id" {
 #   description = "AMI ID for the EC2 instance"
 # }
