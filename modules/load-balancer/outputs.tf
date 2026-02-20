@@ -3,5 +3,5 @@ output "lb_dns_name" {
 }
 
 output "target_group_arn" {
-  value = aws_lb_target_group.this[0].arn
+  value = length(aws_lb_target_group.this) > 0 ? aws_lb_target_group.this[0].arn : null
 }
