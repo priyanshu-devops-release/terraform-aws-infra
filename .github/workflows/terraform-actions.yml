@@ -60,6 +60,7 @@ jobs:
       with:
         payload: |
           {
+            "text": "Terraform Validate job for ${{ github.repository }} on branch ${{ github.ref_name }} finished with status: ${{ job.status }}.",
             "blocks": [
               {
                 "type": "section",
@@ -126,6 +127,7 @@ jobs:
       with:
         payload: |
           {
+            "text": "Terraform Plan job for ${{ github.repository }} on branch ${{ github.ref_name }} finished with status: ${{ job.status }}.",
             "blocks": [
               {
                 "type": "section",
@@ -194,6 +196,7 @@ jobs:
       with:
         payload: |
           {
+            "text": "Terraform Apply job for ${{ github.repository }} on branch ${{ github.ref_name }} finished with status: ${{ job.status }}.",
             "blocks": [
               {
                 "type": "section",
