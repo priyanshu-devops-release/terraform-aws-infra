@@ -1,4 +1,5 @@
 resource "aws_lb" "this" {
+  count              = var.create_load_balancer ? 1 : 0
   name               = var.name
   load_balancer_type = "application"
   subnets            = var.subnet_ids
@@ -8,6 +9,7 @@ resource "aws_lb" "this" {
 }
 
 resource "aws_lb_target_group" "this" {
+  count    = var.create_load_balancer ? 1 : 0
   name     = "${var.name}-tg"
   port     = var.target_port
   protocol = "HTTP"
@@ -27,12 +29,14 @@ resource "aws_lb_target_group" "this" {
 }
 
 resource "aws_lb_target_group_attachment" "this" {
+  count            = var.create_load_balancer ? 1 : 0
   target_group_arn = aws_lb_target_group.this.arn
   target_id        = var.target_instance_id
   port             = var.target_port
 }
 
 resource "aws_lb_listener" "http" {
+  count             = var.create_load_balancer ? 1 : 0
   load_balancer_arn = aws_lb.this.arn
   port              = 8080
   protocol          = "HTTP"

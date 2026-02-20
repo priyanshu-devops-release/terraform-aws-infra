@@ -1,11 +1,6 @@
-variable "dev_ec2" {
-  type    = bool
-  default = false
-}
-
 module "DEV_EC2" {
   source            = "../modules/ec2"
-  create            = var.dev_ec2 ? true : false
+  create_ec2        = var.pb_enable_dev_ec2 ? true : false
   instance_name     = "${var.environment}-instance"
   instance_type     = var.instance_type
   subnet_id         = module.DEV_VPC.public_subnet_ids[0]

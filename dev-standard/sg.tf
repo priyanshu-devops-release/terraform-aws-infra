@@ -1,15 +1,6 @@
-variable "dev_alb_sg" {
-  type    = bool
-  default = false
-}
-variable "dev_ec2_alb_sg" {
-  type    = bool
-  default = false
-}
-
 module "DEV_SG" {
   source      = "../modules/security-group"
-  create_security_group = var.dev_ec2_alb_sg ? true : false
+  create_security_group = var.pb_enable_dev_ec2_sg ? true : false
   name        = "${var.environment}-devops-sg"
   description = "Security group for DevOps EC2"
   vpc_id      = module.DEV_VPC.vpc_id
@@ -42,7 +33,7 @@ module "DEV_SG" {
 
 module "DEV_ALB_SG" {
   source      = "../modules/security-group"
-  create_security_group = var.dev_alb_sg ? true : false
+  create_security_group = var.pb_enable_dev_alb_sg ? true : false
   name        = "${var.environment}-alb-sg"
   description = "ALB Security Group"
   vpc_id      = module.DEV_VPC.vpc_id

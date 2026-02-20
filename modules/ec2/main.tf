@@ -9,6 +9,7 @@ data "aws_ami" "amazon_linux" {
 }
 
 resource "aws_instance" "this" {
+  count = var.create_ec2 ? 1 : 0
   ami           = data.aws_ami.amazon_linux.id
   instance_type = var.instance_type
   subnet_id = var.subnet_id
@@ -24,6 +25,7 @@ resource "aws_instance" "this" {
   )
 }
 resource "aws_key_pair" "this" {
-  key_name   = var.key_name
+  count     = var.create_ec2 ? 1 : 0
+  key_name  = var.key_name
   public_key = var.public_key
 }

@@ -17,7 +17,7 @@ variable "instance_type" {
   description = "EC2 instance type"
   type        = string
 }
-variable "create" {
+variable "create_ec2" {
   type    = bool
 }
 # variable "ami_id" {

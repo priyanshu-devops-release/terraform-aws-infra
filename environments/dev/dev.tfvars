@@ -17,10 +17,10 @@ cluster_name = "pb-dev-eks-cluster"
 pb_enable_dev_eks = false
 
 # EC2 configuration
-dev_ec2 = true
-internal_dev_alb = false
-dev_alb_sg = true
-dev_ec2_alb_sg = false
+pb_enable_dev_ec2 = false
+pb_enable_dev_alb_sg = false
+pb_enable_dev_ec2_sg = false
+pb_enable_dev_alb = false
 key_name = "pb-dev-key"
 instance_type = "t2.micro"
 #ami_id = "ami-04144e1d88f3aa3a0" # Amazon Linux 2 AMI (HVM), SSD Volume Type
