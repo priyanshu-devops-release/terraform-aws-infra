@@ -1,5 +1,5 @@
 output "lb_dns_name" {
-  value = aws_lb.this[0].dns_name
+  value = length(aws_lb.this) > 0 ? aws_lb.this[0].dns_name : null
 }
 
 output "target_group_arn" {
