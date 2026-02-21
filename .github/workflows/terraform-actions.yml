@@ -60,81 +60,7 @@ jobs:
       with:
         payload: |
           {
-            "text": "Terraform Validate - ${{ job.status }}",
-            "attachments": [
-              {
-                "color": "${{ job.status == 'success' && '#2eb886' || '#e01e5a' }}",
-                "blocks": [
-                  {
-                    "type": "header",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "${{ job.status == 'success' && '🟢 SUCCESS' || '🔴 FAILED' }} - Terraform Validate",
-                      "emoji": true
-                    }
-                  },
-                  {
-                    "type": "section",
-                    "fields": [
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Repository:*\n${{ github.repository }}"
-                      },
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Branch:*\n${{ github.ref_name }}"
-                      },
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Environment:*\n${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || 'dev' }}"
-                      },
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Triggered By:*\n${{ github.actor }}"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "context",
-                    "elements": [
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Workflow:* ${{ github.workflow }}"
-                      },
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Run #:* #${{ github.run_number }}"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "divider"
-                  },
-                  {
-                    "type": "actions",
-                    "elements": [
-                      {
-                        "type": "button",
-                        "text": {
-                          "type": "plain_text",
-                          "text": "View Workflow"
-                        },
-                        "style": "primary",
-                        "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                      },
-                      {
-                        "type": "button",
-                        "text": {
-                          "type": "plain_text",
-                          "text": "View Commit"
-                        },
-                        "url": "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+            "text": "${{ job.status == 'success' && ':white_check_mark:' || ':x:' }} Terraform Validate - ${{ job.status }}"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -178,91 +104,7 @@ jobs:
       with:
         payload: |
           {
-            "text": "${{ job.status == 'success' && '✅' || '❌' }} Terraform `${{ github.job }}` ${{ job.status }} on `${{ github.ref_name }}`",
-            "blocks": [
-              {
-                "type": "header",
-                "text": {
-                  "type": "plain_text",
-                  "text": "${{ job.status == 'success' && '✅ Terraform Succeeded' || '❌ Terraform Failed' }}",
-                  "emoji": true
-                }
-              },
-              {
-                "type": "section",
-                "fields": [
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Job:*\n`${{ github.job }}`"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Status:*\n`${{ job.status }}`"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Branch:*\n`${{ github.ref_name }}`"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Triggered By:*\n`${{ github.actor }}`"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Repo:*\n`${{ github.repository }}`"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Run:*\n`#${{ github.run_number }}`"
-                  }
-                ]
-              },
-              {
-                "type": "divider"
-              },
-              {
-                "type": "actions",
-                "elements": [
-                  {
-                    "type": "button",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "🔍 View Run",
-                      "emoji": true
-                    },
-                    "style": "primary",
-                    "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                  },
-                  {
-                    "type": "button",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "📦 View Commit",
-                      "emoji": true
-                    },
-                    "url": "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
-                  },
-                  {
-                    "type": "button",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "🗂 View Repo",
-                      "emoji": true
-                    },
-                    "url": "${{ github.server_url }}/${{ github.repository }}"
-                  }
-                ]
-              },
-              {
-                "type": "context",
-                "elements": [
-                  {
-                    "type": "mrkdwn",
-                    "text": "Workflow: *${{ github.workflow }}* | SHA: `${{ github.sha }}`"
-                  }
-                ]
-              }
-            ]
+            "text": "${{ job.status == 'success' && '✅' || '❌' }} Terraform `${{ github.job }}` ${{ job.status }} on `${{ github.ref_name }}`"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -309,33 +151,7 @@ jobs:
       with:
         payload: |
           {
-            "text": "Terraform ${{ github.job }} - ${{ job.status }}\n*Job:* `${{ github.job }}`\n*Branch:* `${{ github.ref_name }}`\n*Actor:* `${{ github.actor }}`\n*Repo:* `${{ github.repository }}`\n*Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}>\n*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|`${{ github.sha }}`>",
-            "blocks": [
-              {
-                "type": "actions",
-                "elements": [
-                  {
-                    "type": "button",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "View Run",
-                      "emoji": true
-                    },
-                    "style": "primary",
-                    "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                  },
-                  {
-                    "type": "button",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "View Commit",
-                      "emoji": true
-                    },
-                    "url": "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
-                  }
-                ]
-              }
-            ]
+            "text": "Terraform ${{ github.job }} - ${{ job.status }}\n*Job:* `${{ github.job }}`\n*Branch:* `${{ github.ref_name }}`\n*Actor:* `${{ github.actor }}`\n*Repo:* `${{ github.repository }}`\n*Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}>\n*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|`${{ github.sha }}`>"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
