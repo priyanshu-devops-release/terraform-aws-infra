@@ -30,3 +30,11 @@ resource "aws_key_pair" "this" {
   key_name  = var.key_name
   public_key = var.public_key
 }
+
+resource "aws_eip" "this" {
+  count    = var.create_ec2 && var.enable_elastic_ip ? 1 : 0
+  domain   = "vpc"
+  instance = aws_instance.this[0].id
+
+  tags = var.tags
+}

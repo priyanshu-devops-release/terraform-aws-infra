@@ -17,9 +17,10 @@ pb_enable_dev_eks = false
 
 # EC2 configuration
 pb_enable_dev_ec2 = true
+pb_enable_dev_elastic_ip = true
 pb_enable_dev_alb_sg = false
 pb_enable_dev_ec2_sg = true
 pb_enable_dev_alb = false
 key_name = "dev-key"
-instance_type = "t2.micro"
+instance_type = "t3.medium"
 #ami_id = "ami-04144e1d88f3aa3a0" # Amazon Linux 2 AMI (HVM), SSD Volume Type

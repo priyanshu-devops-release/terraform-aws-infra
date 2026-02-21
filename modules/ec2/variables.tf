@@ -28,3 +28,9 @@ variable "public_key" {
   description = "Public key for EC2 SSH access"
   type        = string
 }
+
+variable "enable_elastic_ip" {
+  type        = bool
+  description = "Enable Elastic IP for EC2, set false if EC2 is stopped frequently to avoid charges"
+  default     = false
+}
