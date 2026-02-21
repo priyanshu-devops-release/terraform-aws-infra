@@ -14,6 +14,12 @@ resource "aws_instance" "this" {
     },
     var.tags
   )
+  lifecycle {
+  ignore_changes = [
+    associate_public_ip_address,
+    ami  # also ignore AMI changes to avoid replacement
+  ]
+  }
 }
 
 resource "aws_key_pair" "this" {
