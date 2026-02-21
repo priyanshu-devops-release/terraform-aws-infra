@@ -151,7 +151,7 @@ jobs:
       with:
         payload: |
           {
-            "text": "Terraform ${{ github.job }} - ${{ job.status }}\n*Job:* `${{ github.job }}`\n*Branch:* `${{ github.ref_name }}`\n*Actor:* `${{ github.actor }}`\n*Repo:* `${{ github.repository }}`\n*Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}>\n*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|`${{ github.sha }}`>"
+            "text": "${{ job.status == 'success' && '✅' || '❌' }} Terraform `${{ github.job }}` - ${{ job.status }}\n*Job:* `${{ github.job }}`\n*Branch:* `${{ github.ref_name }}`\n*Actor:* `${{ github.actor }}`\n*Repo:* `${{ github.repository }}`\n*Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}>\n*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|`${{ github.sha }}`>"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
