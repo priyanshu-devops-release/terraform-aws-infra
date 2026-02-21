@@ -14,7 +14,7 @@ resource "aws_instance" "this" {
   instance_type = var.instance_type
   subnet_id = var.subnet_id
   vpc_security_group_ids = compact([var.security_group_id])
-  associate_public_ip_address = true
+  associate_public_ip_address = var.enable_elastic_ip ? false : true
   key_name = aws_key_pair.this[0].key_name
 
   tags = merge(
