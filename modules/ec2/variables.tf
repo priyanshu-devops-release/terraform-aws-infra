@@ -34,3 +34,9 @@ variable "enable_elastic_ip" {
   description = "Enable Elastic IP for EC2, set false if EC2 is stopped frequently to avoid charges"
   default     = false
 }
+
+variable "user_data_file" {
+  type        = string
+  description = "Path to user data script file"
+  default     = null
+}

@@ -1,11 +1,12 @@
 resource "aws_instance" "this" {
-  count = var.create_ec2 ? 1 : 0
+  count         = var.create_ec2 ? 1 : 0
   ami           = var.ami_id
   instance_type = var.instance_type
-  subnet_id = var.subnet_id
+  subnet_id     = var.subnet_id
   vpc_security_group_ids = compact([var.security_group_id])
   associate_public_ip_address = var.enable_elastic_ip ? false : true
-  key_name = aws_key_pair.this[0].key_name
+  key_name      = aws_key_pair.this[0].key_name
+  user_data     = var.user_data_file != null ? file(var.user_data_file) : null
 
   tags = merge(
     {
