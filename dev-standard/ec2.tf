@@ -4,7 +4,7 @@ module "DEV_EC2" {
   ami_id           = var.pb_enable_ami_id
   instance_name     = "${var.environment}-instance"
   instance_type     = var.instance_type
-  enable_elastic_ip = var.pb_enable_elastic_ip
+  enable_elastic_ip = var.pb_enable_dev_elastic_ip
   subnet_id         = length(module.DEV_VPC.public_subnet_ids) > 0 ? module.DEV_VPC.public_subnet_ids[0] : null
   security_group_id = module.DEV_SG.security_group_id
   key_name          = var.key_name

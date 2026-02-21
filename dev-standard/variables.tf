@@ -70,7 +70,7 @@ variable "pb_enable_dev_alb" {
   type    = bool
   default = false
 }
-variable "pb_enable_elastic_ip" {
+variable "pb_enable_dev_elastic_ip" {
   type    = bool
   default = false
 }
