@@ -6,7 +6,7 @@ module "DEV_EC2" {
   instance_type     = var.instance_type
   enable_public_ip  = var.pb_enable_dev_public_ip
   enable_elastic_ip = var.pb_enable_dev_elastic_ip
-  user_data_file    = fileexists("../dev-standard/src/user-data.sh") ? filebase64("../dev-standard/src/user-data.sh") : null
+  user_data_file    = fileexists("../dev-standard/src/userdata.sh") ? filebase64("../dev-standard/src/userdata.sh") : null
   subnet_id         = length(module.DEV_VPC.public_subnet_ids) > 0 ? module.DEV_VPC.public_subnet_ids[0] : null
   security_group_id = module.DEV_SG.security_group_id
   key_name          = var.key_name
