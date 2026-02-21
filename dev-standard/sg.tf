@@ -29,6 +29,7 @@ module "DEV_SG" {
     Environment = var.environment
     Terraform   = "true"
   }
+  depends_on = [module.DEV_VPC]
 }
 
 module "DEV_ALB_SG" {

@@ -7,7 +7,7 @@ module "DEV_EC2" {
   security_group_id = module.DEV_ALB_SG.security_group_id
   key_name          = var.key_name
   public_key        = file("src/dev-key.pub")
-  depends_on       = [module.DEV_VPC, module.DEV_SG]
+  depends_on       = module.DEV_SG
   tags = {
     Environment = var.environment
     Terraform   = "true"
