@@ -27,7 +27,7 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  terraform-validate:
     name: Terraform Validate
     runs-on: ubuntu-latest
 
@@ -60,7 +60,7 @@ jobs:
       with:
         payload: |
           {
-            "text": "Terraform ${{ job.name }} - ${{ job.status }}",
+            "text": "Terraform Validate - ${{ job.status }}",
             "attachments": [
               {
                 "color": "${{ job.status == 'success' && '#2eb886' || '#e01e5a' }}",
@@ -69,7 +69,7 @@ jobs:
                     "type": "header",
                     "text": {
                       "type": "plain_text",
-                      "text": "${{ job.status == 'success' && '🟢 SUCCESS' || '🔴 FAILED' }} - Terraform ${{ job.name }}",
+                      "text": "${{ job.status == 'success' && '🟢 SUCCESS' || '🔴 FAILED' }} - Terraform Validate",
                       "emoji": true
                     }
                   },
@@ -138,10 +138,10 @@ jobs:
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-  plan:
+  terraform-plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
-    needs: validate
+    needs: terraform-validate
     if: github.event_name == 'workflow_dispatch'
     defaults:
       run:
@@ -267,12 +267,12 @@ jobs:
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-  apply:
+  terraform-apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
     needs:
-    - validate
-    - plan
+    - terraform-validate
+    - terraform-plan
     if: github.event.inputs.apply == 'true'
     environment: terraform-apply-dev
 
@@ -309,7 +309,7 @@ jobs:
       with:
         payload: |
           {
-            "text": "Terraform ${{ job.name }} - ${{ job.status }}",
+            "text": "Terraform Apply - ${{ job.status }}",
             "attachments": [
               {
                 "color": "${{ job.status == 'success' && '#2eb886' || '#e01e5a' }}",
@@ -318,7 +318,7 @@ jobs:
                     "type": "header",
                     "text": {
                       "type": "plain_text",
-                      "text": "${{ job.status == 'success' && '🟢 SUCCESS' || '🔴 FAILED' }} - Terraform ${{ job.name }}",
+                      "text": "${{ job.status == 'success' && '🟢 SUCCESS' || '🔴 FAILED' }} - Terraform Apply",
                       "emoji": true
                     }
                   },
