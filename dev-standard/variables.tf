@@ -74,6 +74,7 @@ variable "pb_enable_elastic_ip" {
   type    = bool
   default = false
 }
-# variable "ami_id" {
-#   description = "AMI ID for the EC2 instance"
-# }
+variable "pb_enable_ami_id" {
+  description = "AMI ID for the EC2 instance"
+  type        = string
+}
