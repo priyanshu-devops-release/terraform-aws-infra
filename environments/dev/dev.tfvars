@@ -2,7 +2,7 @@
 pb_enable_dev_vpc = true
 aws_region = "us-west-2"
 vpc_name   = "dev-vpc"
-environment = "pb-dev"
+environment = "platform-dev"
 enable_s3_bucket = false
 enable_nat_gateway = true
 availability_zones = ["us-west-2a", "us-west-2b"]

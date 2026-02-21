@@ -14,3 +14,7 @@ variable "create_cluster" {
   type    = bool
   default = false
 }
+
+variable "name" {
+  type = string
+}

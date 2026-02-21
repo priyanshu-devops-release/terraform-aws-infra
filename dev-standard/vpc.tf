@@ -5,6 +5,7 @@ module "DEV_VPC" {
   public_subnet_cidrs  = var.public_subnets
   # private_subnet_cidrs = var.private_subnets
   availability_zones   = var.availability_zones
+  name                 = "${var.environment}-vpc"
   tags = {
     Environment = var.environment
     Terraform   = "true"
