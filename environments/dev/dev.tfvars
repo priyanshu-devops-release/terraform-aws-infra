@@ -20,6 +20,6 @@ pb_enable_dev_ec2 = true
 pb_enable_dev_alb_sg = false
 pb_enable_dev_ec2_sg = true
 pb_enable_dev_alb = false
-key_name = "pb-dev-key"
+key_name = "dev-key"
 instance_type = "t2.micro"
 #ami_id = "ami-04144e1d88f3aa3a0" # Amazon Linux 2 AMI (HVM), SSD Volume Type
