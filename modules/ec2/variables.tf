@@ -40,3 +40,9 @@ variable "user_data_file" {
   description = "Path to user data script file"
   default     = null
 }
+
+variable "enable_public_ip" {
+  type        = bool
+  description = "Enable public IP for EC2 instance"
+  default     = true
+}

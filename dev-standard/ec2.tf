@@ -4,6 +4,7 @@ module "DEV_EC2" {
   ami_id           = var.pb_enable_ami_id
   instance_name     = "${var.environment}-instance"
   instance_type     = var.instance_type
+  enable_public_ip  = var.pb_enable_dev_public_ip
   enable_elastic_ip = var.pb_enable_dev_elastic_ip
   user_data_file    = fileexists("../dev-standard/src/user-data.sh") ? filebase64("../dev-standard/src/user-data.sh") : null
   subnet_id         = length(module.DEV_VPC.public_subnet_ids) > 0 ? module.DEV_VPC.public_subnet_ids[0] : null

@@ -18,6 +18,7 @@ pb_enable_dev_eks = false
 # EC2 configuration
 pb_enable_dev_ec2 = true
 pb_enable_dev_elastic_ip = true
+pb_enable_dev_public_ip = false
 pb_enable_dev_alb_sg = false
 pb_enable_dev_ec2_sg = true
 pb_enable_dev_alb = false

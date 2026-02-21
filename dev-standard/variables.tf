@@ -78,3 +78,8 @@ variable "pb_enable_ami_id" {
   description = "AMI ID for the EC2 instance"
   type        = string
 }
+
+variable "pb_enable_dev_public_ip" {
+  type    = bool
+  default = false
+}
