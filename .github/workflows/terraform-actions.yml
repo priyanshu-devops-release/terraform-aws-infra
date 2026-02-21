@@ -60,7 +60,7 @@ jobs:
       with:
         payload: |
           {
-            "text": "${{ job.status == 'success' && ':white_check_mark:' || ':x:' }} Terraform Validate - ${{ job.status }}"
+            "text": "${{ job.status == 'success' && ':white_check_mark:' || ':x:' }} `${{ github.job }}` - ${{ job.status }}"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
