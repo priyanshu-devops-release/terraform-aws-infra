@@ -8,7 +8,11 @@ resource "aws_instance" "this" {
   key_name      = aws_key_pair.this[0].key_name
   user_data     = var.user_data_file
   user_data_replace_on_change = true
-
+  root_block_device {
+    volume_size = 20    # ← increase from default 8GB
+    volume_type = "gp3"
+    delete_on_termination = true
+  }
   tags = merge(
     {
       Name = var.instance_name
