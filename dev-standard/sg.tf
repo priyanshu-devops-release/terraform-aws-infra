@@ -6,34 +6,39 @@ module "DEV_SG" {
   vpc_id      = module.DEV_VPC.vpc_id
   ingress_rules = [
     {
+      name        = "SSH"
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
     },
     {
+      name        = "HTTP"
       from_port   = 8080
       to_port     = 8080
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
     },
     {
+      name        = "Custom"
       from_port   = 30007
       to_port     = 30007
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
     },
     {
-    from_port   = 6443    # K3s API
-    to_port     = 6443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+      name        = "K3s API"
+      from_port   = 6443
+      to_port     = 6443
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
     },
     {
-    from_port   = 30000   # NodePort range
-    to_port     = 32767
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+      name        = "NodePort"
+      from_port   = 30000
+      to_port     = 32767
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
     }
   ]
 
