@@ -1,4 +1,4 @@
-# AWS region for vpc
+# Configuration for vpc
 pb_enable_dev_vpc = true
 aws_region = "us-west-2"
 vpc_name   = "dev-vpc"
