@@ -12,7 +12,7 @@ output "DEV_VPC" {
 }
 
 output "DEV_EC2" {
-  value = module.DEV_EC2.private_ip
+  value = module.DEV_EC2.public_ip
 }
 
 output "DEV_ALB_SG" {
