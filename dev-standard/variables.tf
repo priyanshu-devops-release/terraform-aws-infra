@@ -83,3 +83,8 @@ variable "pb_enable_dev_public_ip" {
   type    = bool
   default = false
 }
+
+variable "EC2_USER_DATA" {
+  description = "Path to the EC2 user data script"
+  type        = string
+}

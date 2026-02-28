@@ -7,6 +7,7 @@ resource "aws_instance" "this" {
   associate_public_ip_address = var.enable_public_ip
   key_name      = aws_key_pair.this[0].key_name
   user_data     = var.user_data_file
+  user_data_replace_on_change = true
 
   tags = merge(
     {
