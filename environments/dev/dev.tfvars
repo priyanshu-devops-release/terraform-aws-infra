@@ -1,5 +1,5 @@
 # AWS region for vpc
-pb_enable_dev_vpc = false
+pb_enable_dev_vpc = true
 aws_region = "us-west-2"
 vpc_name   = "dev-vpc"
 environment = "platform-dev"
@@ -16,8 +16,8 @@ cluster_name = "pb-dev-eks-cluster"
 pb_enable_dev_eks = false
 
 # EC2 configuration
-pb_enable_dev_ec2 = false
-pb_enable_dev_elastic_ip = false
+pb_enable_dev_ec2 = true
+pb_enable_dev_elastic_ip = true
 pb_enable_dev_public_ip = false
 pb_enable_dev_alb_sg = false
 pb_enable_dev_ec2_sg = false

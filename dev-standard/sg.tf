@@ -22,6 +22,18 @@ module "DEV_SG" {
       to_port     = 30007
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+    from_port   = 6443    # K3s API
+    to_port     = 6443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+    from_port   = 30000   # NodePort range
+    to_port     = 32767
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
     }
   ]
 
