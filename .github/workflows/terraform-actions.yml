@@ -1,157 +1,157 @@
-name: Terraform IAC App Stack
+# name: Terraform IAC App Stack
 
-on:
-  push:
-    branches:
-      - master
+# on:
+#   push:
+#     branches:
+#       - master
 
-  workflow_dispatch:
-    inputs:
-      apply:
-        description: 'Terraform Deploy'
-        required: true
-        type: boolean
-        default: false
-      environment:
-        description: 'Environment'
-        required: true
-        type: choice
-        options:
-        - dev
-        - staging
-        - prod
-        default: dev
+#   workflow_dispatch:
+#     inputs:
+#       apply:
+#         description: 'Terraform Deploy'
+#         required: true
+#         type: boolean
+#         default: false
+#       environment:
+#         description: 'Environment'
+#         required: true
+#         type: choice
+#         options:
+#         - dev
+#         - staging
+#         - prod
+#         default: dev
 
-permissions:
-  id-token: write
-  contents: read
+# permissions:
+#   id-token: write
+#   contents: read
 
-jobs:
-  validate:
-    name: Terraform Validate
-    runs-on: ubuntu-latest
+# jobs:
+#   validate:
+#     name: Terraform Validate
+#     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: dev-standard
+#     defaults:
+#       run:
+#         working-directory: dev-standard
 
-    steps:
-    - uses: actions/checkout@v4
+#     steps:
+#     - uses: actions/checkout@v4
 
-    - uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.14.3
-    - name: Configure AWS credentials (OIDC)
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
-        aws-region: ${{ vars.AWS_REGION }}
-    - name: Terraform Init
-      run: |
-        terraform init -upgrade -backend-config=../environments/dev/dev-remotestate.conf
-#        terraform workspace select dev || terraform workspace new dev
+#     - uses: hashicorp/setup-terraform@v3
+#       with:
+#         terraform_version: 1.14.3
+#     - name: Configure AWS credentials (OIDC)
+#       uses: aws-actions/configure-aws-credentials@v4
+#       with:
+#         role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
+#         aws-region: ${{ vars.AWS_REGION }}
+#     - name: Terraform Init
+#       run: |
+#         terraform init -upgrade -backend-config=../environments/dev/dev-remotestate.conf
+# #        terraform workspace select dev || terraform workspace new dev
 
-    - name: Terraform Validate
-      run: terraform validate
+#     - name: Terraform Validate
+#       run: terraform validate
 
-    - name: Slack Notification
-      if: always()
-      uses: slackapi/slack-github-action@v1.25.0
-      with:
-        payload: |
-          {
-            "text": "${{ job.status == 'success' && ':white_check_mark:' || ':x:' }} Terraform `${{ github.job }}` - ${{ job.status }}"
-          }
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-  plan:
-    name: Terraform Plan
-    runs-on: ubuntu-latest
-    needs: validate
-    if: github.event_name == 'workflow_dispatch'
-    defaults:
-      run:
-        working-directory: dev-standard
+#     - name: Slack Notification
+#       if: always()
+#       uses: slackapi/slack-github-action@v1.25.0
+#       with:
+#         payload: |
+#           {
+#             "text": "${{ job.status == 'success' && ':white_check_mark:' || ':x:' }} Terraform `${{ github.job }}` - ${{ job.status }}"
+#           }
+#       env:
+#         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#   plan:
+#     name: Terraform Plan
+#     runs-on: ubuntu-latest
+#     needs: validate
+#     if: github.event_name == 'workflow_dispatch'
+#     defaults:
+#       run:
+#         working-directory: dev-standard
 
-    steps:
-    - uses: actions/checkout@v4
+#     steps:
+#     - uses: actions/checkout@v4
 
-    - uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.14.3
+#     - uses: hashicorp/setup-terraform@v3
+#       with:
+#         terraform_version: 1.14.3
 
-    - name: Configure AWS credentials (OIDC)
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
-        aws-region: ${{ vars.AWS_REGION }}
+#     - name: Configure AWS credentials (OIDC)
+#       uses: aws-actions/configure-aws-credentials@v4
+#       with:
+#         role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
+#         aws-region: ${{ vars.AWS_REGION }}
 
-    - name: Terraform Init & Plan
-      run: |
-        terraform init -upgrade -backend-config=../environments/dev/dev-remotestate.conf
-        terraform plan \
-          -var-file=../environments/dev/dev.tfvars \
-          -out=dev-tfplan
+#     - name: Terraform Init & Plan
+#       run: |
+#         terraform init -upgrade -backend-config=../environments/dev/dev-remotestate.conf
+#         terraform plan \
+#           -var-file=../environments/dev/dev.tfvars \
+#           -out=dev-tfplan
 
-    - uses: actions/upload-artifact@v4
-      with:
-        name: dev-tfplan
-        path: dev-standard/dev-tfplan
+#     - uses: actions/upload-artifact@v4
+#       with:
+#         name: dev-tfplan
+#         path: dev-standard/dev-tfplan
 
-    - name: Slack Notification
-      if: always()
-      uses: slackapi/slack-github-action@v1.25.0
-      with:
-        payload: |
-          {
-            "text": "${{ job.status == 'success' && '✅' || '❌' }} Terraform `${{ github.job }}` ${{ job.status }} on `${{ github.ref_name }}`"
-          }
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-  terraform:
-    name: Terraform Apply
-    runs-on: ubuntu-latest
-    needs:
-    - validate
-    - plan
-    if: github.event.inputs.apply == 'true'
-    environment: terraform-apply-dev
+#     - name: Slack Notification
+#       if: always()
+#       uses: slackapi/slack-github-action@v1.25.0
+#       with:
+#         payload: |
+#           {
+#             "text": "${{ job.status == 'success' && '✅' || '❌' }} Terraform `${{ github.job }}` ${{ job.status }} on `${{ github.ref_name }}`"
+#           }
+#       env:
+#         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+#   terraform:
+#     name: Terraform Apply
+#     runs-on: ubuntu-latest
+#     needs:
+#     - validate
+#     - plan
+#     if: github.event.inputs.apply == 'true'
+#     environment: terraform-apply-dev
 
-    defaults:
-      run:
-        working-directory: dev-standard
+#     defaults:
+#       run:
+#         working-directory: dev-standard
 
-    steps:
-    - uses: actions/checkout@v4
+#     steps:
+#     - uses: actions/checkout@v4
 
-    - uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.14.3
+#     - uses: hashicorp/setup-terraform@v3
+#       with:
+#         terraform_version: 1.14.3
 
-    - name: Configure AWS credentials (OIDC)
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
-        aws-region: ${{ vars.AWS_REGION }}
+#     - name: Configure AWS credentials (OIDC)
+#       uses: aws-actions/configure-aws-credentials@v4
+#       with:
+#         role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
+#         aws-region: ${{ vars.AWS_REGION }}
 
-    - uses: actions/download-artifact@v4
-      with:
-        name: dev-tfplan
-        path: dev-standard
+#     - uses: actions/download-artifact@v4
+#       with:
+#         name: dev-tfplan
+#         path: dev-standard
 
-    - name: Terraform Init & Apply
-      run: |
-        terraform init -upgrade -backend-config=../environments/dev/dev-remotestate.conf
-        terraform apply dev-tfplan
+#     - name: Terraform Init & Apply
+#       run: |
+#         terraform init -upgrade -backend-config=../environments/dev/dev-remotestate.conf
+#         terraform apply dev-tfplan
 
-    - name: Slack Notification
-      if: always()
-      uses: slackapi/slack-github-action@v1.25.0
-      with:
-        payload: |
-          {
-            "text": "${{ job.status == 'success' && '✅' || '❌' }} Terraform `${{ github.job }}` - ${{ job.status }}\n*Job:* `${{ github.job }}`\n*Branch:* `${{ github.ref_name }}`\n*Actor:* `${{ github.actor }}`\n*Repo:* `${{ github.repository }}`\n*Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}>\n*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|`${{ github.sha }}`>"
-          }
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#     - name: Slack Notification
+#       if: always()
+#       uses: slackapi/slack-github-action@v1.25.0
+#       with:
+#         payload: |
+#           {
+#             "text": "${{ job.status == 'success' && '✅' || '❌' }} Terraform `${{ github.job }}` - ${{ job.status }}\n*Job:* `${{ github.job }}`\n*Branch:* `${{ github.ref_name }}`\n*Actor:* `${{ github.actor }}`\n*Repo:* `${{ github.repository }}`\n*Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}>\n*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|`${{ github.sha }}`>"
+#           }
+#       env:
+#         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

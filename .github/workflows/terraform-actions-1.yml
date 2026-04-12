@@ -1,0 +1,152 @@
+name: Terraform IAC App Stack
+
+on:
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        type: choice
+        options:
+        - dev
+        - staging
+        - prod
+        default: dev
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  validate:
+    name: Terraform Validate
+    runs-on: ubuntu-latest
+    # Run on push OR workflow_dispatch (but skip if plan/apply will run)
+    if: github.event_name == 'push'
+    
+    defaults:
+      run:
+        working-directory: dev-standard
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.14.3
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
+        aws-region: ${{ vars.AWS_REGION }}
+    - name: Terraform Init
+      run: |
+        terraform init -upgrade -backend-config=../environments/dev/dev-remotestate.conf
+    - name: Terraform Validate
+      run: terraform validate
+    - name: Slack Notification
+      if: always()
+      uses: slackapi/slack-github-action@v1.25.0
+      with:
+        payload: |
+          {
+            "text": "${{ job.status == 'success' && ':white_check_mark:' || ':x:' }} Terraform Validate - ${{ job.status }}"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.event_name == 'workflow_dispatch'
+    environment: plan-${{ github.event.inputs.environment }}
+    
+    outputs:
+      plan_exit_code: ${{ steps.plan.outputs.exitcode }}
+      environment: ${{ steps.env.outputs.environment }}
+    
+    defaults:
+      run:
+        working-directory: dev-standard
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.14.3
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
+        aws-region: ${{ vars.AWS_REGION }}
+    
+    - name: Set environment output
+      id: env
+      run: echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+    
+    - id: plan
+      name: Terraform Init & Plan
+      run: |
+        terraform init -upgrade -backend-config=../environments/${{ github.event.inputs.environment }}/${{ github.event.inputs.environment }}-remotestate.conf
+        terraform plan \
+          -var-file=../environments/${{ github.event.inputs.environment }}/${{ github.event.inputs.environment }}.tfvars \
+          -out=${{ github.event.inputs.environment }}-tfplan
+        echo "exitcode=$?" >> $GITHUB_OUTPUT
+    
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ github.event.inputs.environment }}-tfplan
+        path: dev-standard/${{ github.event.inputs.environment }}-tfplan
+        retention-days: 1
+    
+    - name: Plan Summary
+      run: |
+        echo "✅ Plan completed for ${{ github.event.inputs.environment }}"
+        echo "👉 Click 'Review deployments' above and approve to continue to Apply"
+
+  apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    needs: plan
+    if: github.event_name == 'workflow_dispatch' && needs.plan.result == 'success'
+    environment: apply-${{ github.event.inputs.environment }}
+    
+    defaults:
+      run:
+        working-directory: dev-standard
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.14.3
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
+        aws-region: ${{ vars.AWS_REGION }}
+    
+    - uses: actions/download-artifact@v4
+      with:
+        name: ${{ needs.plan.outputs.environment }}-tfplan
+        path: dev-standard
+    
+    - name: Terraform Init & Apply
+      run: |
+        terraform init -upgrade -backend-config=../environments/${{ needs.plan.outputs.environment }}/${{ needs.plan.outputs.environment }}-remotestate.conf
+        terraform apply ${{ needs.plan.outputs.environment }}-tfplan
+    
+    - name: Slack Notification
+      if: always()
+      uses: slackapi/slack-github-action@v1.25.0
+      with:
+        payload: |
+          {
+            "text": "${{ job.status == 'success' && '✅' || '❌' }} Terraform Apply ${{ job.status }} for ${{ needs.plan.outputs.environment }}\nActor: ${{ github.actor }}"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
