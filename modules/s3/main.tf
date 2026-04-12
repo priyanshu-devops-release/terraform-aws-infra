@@ -1,25 +1,50 @@
-resource "aws_s3_bucket" "s3-bucket" {
-  bucket = var.bucket_id
-  tags = merge(
-    {
-      terraform = "true"
-    },
-    var.tags
-  )
+# S3 Bucket
+resource "aws_s3_bucket" "this" {
+  count = var.create_bucket ? 1 : 0
+
+  bucket = var.bucket_name
+  tags   = var.tags
 }
 
-resource "aws_s3_bucket_versioning" "s3-versioning" {
-  bucket = aws_s3_bucket.s3-bucket.id
+# Bucket ACL (optional)
+resource "aws_s3_bucket_acl" "this" {
+  count = var.create_bucket && var.create_acl ? 1 : 0
 
+  bucket = aws_s3_bucket.this[0].id
+  acl    = var.acl
+}
+
+# Bucket Versioning
+resource "aws_s3_bucket_versioning" "this" {
+  count = var.create_bucket && var.create_versioning ? 1 : 0
+
+  bucket = aws_s3_bucket.this[0].id
   versioning_configuration {
-    status = var.versioning ? "Enabled" : "Suspended"
+    status = var.versioning_enabled ? "Enabled" : "Suspended"
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "s3-public-access-block" {
-  bucket                  = aws_s3_bucket.s3-bucket.id
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+# Bucket Encryption
+resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
+  count = var.create_bucket && var.create_encryption ? 1 : 0
+
+  bucket = aws_s3_bucket.this[0].id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = var.encryption_algorithm
+    }
+  }
+}
+
+# Block Public Access
+resource "aws_s3_bucket_public_access_block" "this" {
+  count = var.create_bucket && var.create_public_access_block ? 1 : 0
+
+  bucket = aws_s3_bucket.this[0].id
+
+  block_public_acls       = var.block_public_acls
+  block_public_policy     = var.block_public_policy
+  ignore_public_acls      = var.ignore_public_acls
+  restrict_public_buckets = var.restrict_public_buckets
 }

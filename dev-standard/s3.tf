@@ -1,23 +1,13 @@
-# variable "enable_s3_bucket" {
-#   type        = string
-#   default     = "true"
-#   description = "Enable S3 bucket creation"
-# }
+module "DEV_STANDARD_S3" {
+  create_bucket      = var.create_bucket
+  source = "../modules/s3"
+  bucket_name        = "${var.environment}-s3-devops"
+  create_versioning  = var.create_versioning
+  versioning_enabled = var.versioning_enabled
+  create_encryption  = var.create_encryption
 
-# module "DEV_S3_PERSONAL_BACKUPS" {
-#   create_bucket = var.enable_s3_bucket == "true" ? true : false
-#   source = "../modules/s3"
-#   bucket_id = "${var.environment}-s3-personal-backups-us-west-2"
-#   tags = {
-#     Environment = var.environment
-#   }
-# }
-
-# module "DEV_S3_PERSONAL_BACKUPS_EVENT_NOTIFICATION" {
-#   source = "../modules/s3_notification"
-#   bucket_id = module.DEV_S3_PERSONAL_BACKUPS.bucket_id
-#   sns_topic_arn = module.DEV_SNS.sns_topic_arn
-#   events        = ["s3:ObjectCreated:*"]
-#   filter_suffix = ".log"
-#   depends_on = [module.DEV_SNS]
-# }
+  tags = {
+    Environment = var.environment
+    terraform   = "true"
+  }
+}

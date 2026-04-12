@@ -88,3 +88,29 @@ variable "EC2_USER_DATA" {
   description = "Path to the EC2 user data script"
   type        = string
 }
+
+
+#S3 variables
+variable "create_bucket" {
+  description = "Whether to create the S3 bucket"
+  type        = bool
+  default     = false
+}
+
+variable "create_versioning" {
+  description = "Whether to create versioning configuration"
+  type        = bool
+  default     = false
+}
+
+variable "versioning_enabled" {
+  description = "Enable versioning for the bucket"
+  type        = bool
+  default     = false
+}
+
+variable "create_encryption" {
+  description = "Whether to create encryption configuration"
+  type        = bool
+  default     = false
+}

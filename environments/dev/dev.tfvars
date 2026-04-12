@@ -26,3 +26,12 @@ pb_enable_dev_alb = false
 pb_enable_ami_id = "ami-03e73877aee33eaf9" # Amazon Linux 2 AMI (HVM), SSD Volume Type
 key_name = "dev-key"
 instance_type = "t3.medium"
+
+
+# S3 Bucket configuration
+enable_s3_bucket = true
+create_acl = false
+acl = "private"
+create_versioning = false
+versioning_enabled = false
+create_encryption = true
