@@ -25,7 +25,7 @@ jobs:
   validate:
     name: Terraform Validate
     runs-on: ubuntu-latest
-    # Run on push OR when manually triggered (but only validate, no plan/apply)
+    # Only run on push to master, NOT on manual trigger
     if: github.event_name == 'push'
     
     defaults:
@@ -61,8 +61,7 @@ jobs:
   plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
-    # Remove dependency on validate for manual runs
-    needs: validate
+    # Remove needs: validate - run independently on manual trigger
     if: github.event_name == 'workflow_dispatch'
     environment: plan-${{ github.event.inputs.environment }}
     
