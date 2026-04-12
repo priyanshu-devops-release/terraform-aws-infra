@@ -29,7 +29,7 @@ instance_type = "t3.medium"
 
 
 # S3 Bucket configuration
-enable_s3_bucket = true
+create_bucket = true
 create_acl = false
 acl = "private"
 create_versioning = false
