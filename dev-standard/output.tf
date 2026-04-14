@@ -24,3 +24,6 @@ output "DEV_ALB_SG" {
 output "DEV_SG" {
   value = module.DEV_SG.security_group_id
 }
+output "DEV_STANDARD_S3_HELM_CHARTS" {
+  value = module.DEV_STANDARD_S3_HELM_CHARTS.bucket_id
+}
