@@ -114,3 +114,10 @@ variable "create_encryption" {
   type        = bool
   default     = false
 }
+
+# IAM Role variables
+variable "create_role" {
+  description = "Whether to create the IAM role"
+  type        = bool
+  default     = false
+}

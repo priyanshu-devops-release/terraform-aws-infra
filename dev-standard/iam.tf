@@ -1,19 +1,28 @@
-# data "aws_iam_policy_document" "sns-topic" {
-#   statement {
-#     effect = "Allow"
-
-#     principals {
-#       type        = "Service"
-#       identifiers = ["s3.amazonaws.com"]
-#     }
-
-#     actions   = ["SNS:Publish"]
-#     resources = [module.DEV_SNS.sns_topic_arn]
-
-#     condition {
-#       test     = "ArnLike"
-#       variable = "aws:SourceArn"
-#       values   = [module.DEV_S3_PERSONAL_BACKUPS.bucket_arn]
-#     }
-#   }
-# }
+module "DEV_STANDARD_IAM_ROLE_S3" {
+  source = "../iam-role"
+  create_role = var.create_role
+  role_name = "${var.environment}-s3-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+  
+  policy_arns = [
+    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+    "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+  ]
+  
+  tags = {
+    Environment = var.environment
+    name        = "${var.environment}-s3-role"
+    terraform   = "true"
+  }
+}
