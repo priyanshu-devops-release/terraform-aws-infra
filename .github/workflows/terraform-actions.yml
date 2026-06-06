@@ -61,6 +61,21 @@ jobs:
       with:
         role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
         aws-region: ${{ vars.AWS_REGION }}
+    - name: Terraform Init (for state backup)
+      run: |
+        set -e
+        terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf || true
+        # attempt to pull current state; if none exists, continue
+        TIMESTAMP=$(date +%s)
+        terraform state pull > ${ENVIRONMENT}-state-${TIMESTAMP}.json || echo "no state to pull"
+
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ${{ env.ENVIRONMENT }}-state-backup
+        path: ${{ env.ENVIRONMENT }}-state-*.json
+        retention-days: 10
+
     - name: Terraform Init
       run: |
         terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf
@@ -112,6 +127,19 @@ jobs:
         role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
         aws-region: ${{ vars.AWS_REGION }}
 
+    - name: Terraform Init (for state backup)
+      run: |
+        set -e
+        terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf || true
+        TIMESTAMP=$(date +%s)
+        terraform state pull > ${ENVIRONMENT}-state-${TIMESTAMP}.json || echo "no state to pull"
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ${{ env.ENVIRONMENT }}-state-backup
+        path: ${{ env.ENVIRONMENT }}-state-*.json
+        retention-days: 10
+
     - name: Terraform Init & Plan
       run: |
         terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf
@@ -129,7 +157,7 @@ jobs:
       with:
         name: ${{ env.ENVIRONMENT }}-tfplan-package
         path: ${{ env.ENVIRONMENT }}-tfplan*
-        retention-days: 7
+        retention-days: 10
 
     - name: Slack Notification
       if: always()
@@ -190,6 +218,19 @@ jobs:
         ls -la
         echo "\n----- Plan summary (first 400 lines) -----\n"
         head -n 400 ${ENVIRONMENT}-tfplan.txt || true
+
+    - name: Create pre-apply state backup
+      run: |
+        set -e
+        terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf || true
+        TIMESTAMP=$(date +%s)
+        terraform state pull > ${ENVIRONMENT}-state-${TIMESTAMP}.json || echo "no state to pull"
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ${{ env.ENVIRONMENT }}-state-backup
+        path: ${{ env.ENVIRONMENT }}-state-*.json
+        retention-days: 10
 
     - name: Terraform Init & Apply
       run: |
