@@ -153,13 +153,6 @@ jobs:
         terraform show -no-color ${ENVIRONMENT}-tfplan > ${ENVIRONMENT}-tfplan.txt
         terraform show -no-color -json ${ENVIRONMENT}-tfplan > ${ENVIRONMENT}-tfplan.json
 
-    - name: Debug: show plan files
-      run: |
-        echo "PWD: $(pwd)"
-        ls -la
-        echo "Matching files:"
-        ls -la ${ENVIRONMENT}-tfplan* || true
-
     - uses: actions/upload-artifact@v4
       with:
         name: ${{ env.ENVIRONMENT }}-tfplan-package
@@ -196,11 +189,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Debug: list artifacts before download
-      run: |
-        echo "Listing artifacts for run ${GITHUB_RUN_ID} (repo: ${GITHUB_REPOSITORY})"
-        gh api repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts --jq '.artifacts[].name' || true
 
     - uses: actions/download-artifact@v4
       with:
