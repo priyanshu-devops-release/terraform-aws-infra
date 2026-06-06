@@ -1,7 +1,7 @@
 module "DEV_EC2" {
   source            = "../modules/ec2"
   create_ec2        = var.pb_enable_dev_ec2 && var.pb_enable_dev_ec2_sg ? true : false
-  ami_id           = var.pb_enable_ami_id
+  ami_id            = var.pb_enable_ami_id
   instance_name     = "${var.environment}-instance"
   instance_type     = var.instance_type
   enable_public_ip  = var.pb_enable_dev_public_ip
@@ -11,7 +11,7 @@ module "DEV_EC2" {
   security_group_id = module.DEV_SG.security_group_id
   key_name          = var.key_name
   public_key        = file("src/dev-key.pub")
-  depends_on       = [module.DEV_SG]
+  depends_on        = [module.DEV_SG]
 
   tags = {
     Environment = var.environment

@@ -1,7 +1,7 @@
 module "DEV_VPC" {
-  source            = "../modules/vpc"
-  create_vpc        = var.pb_enable_dev_vpc ? true : false
-  vpc_cidr           = var.vpc_cidr
+  source              = "../modules/vpc"
+  create_vpc          = var.pb_enable_dev_vpc ? true : false
+  vpc_cidr            = var.vpc_cidr
   public_subnet_cidrs = var.public_subnets
   # private_subnet_cidrs = var.private_subnets
   availability_zones = var.availability_zones

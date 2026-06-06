@@ -1,7 +1,7 @@
 module "DEV_STANDARD_IAM_ROLE_S3" {
-  source = "../modules/iam-role"
+  source      = "../modules/iam-role"
   create_role = var.create_role
-  role_name = "${var.environment}-s3-role"
+  role_name   = "${var.environment}-s3-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -22,7 +22,7 @@ module "DEV_STANDARD_IAM_ROLE_S3" {
 
   tags = {
     Environment = var.environment
-    name = "${var.environment}-s3-role"
-    terraform = "true"
+    name        = "${var.environment}-s3-role"
+    terraform   = "true"
   }
 }
