@@ -56,30 +56,10 @@ jobs:
     - name: Terraform fmt check
       run: terraform fmt -check
 
-    - name: Configure AWS credentials (OIDC)
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
-        aws-region: ${{ vars.AWS_REGION }}
-    - name: Terraform Init (for state backup)
+    - name: Terraform Init (no backend)
       run: |
-        set -e
-        terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf || true
-        # attempt to pull current state; if none exists, continue
-        TIMESTAMP=$(date +%s)
-        terraform state pull > ${ENVIRONMENT}-state-${TIMESTAMP}.json || echo "no state to pull"
-
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: ${{ env.ENVIRONMENT }}-state-backup
-        path: ${{ env.ENVIRONMENT }}-state-*.json
-        retention-days: 10
-
-    - name: Terraform Init
-      run: |
-        terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf
-#        terraform workspace select dev || terraform workspace new dev
+        # Initialize without remote backend to speed up validation and avoid backend network calls
+        terraform init -backend=false -upgrade
 
     - name: Terraform Validate
       run: terraform validate
