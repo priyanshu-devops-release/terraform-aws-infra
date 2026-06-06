@@ -12,6 +12,7 @@ module "DEV_EC2" {
   key_name          = var.key_name
   public_key        = file("src/dev-key.pub")
   depends_on       = [module.DEV_SG]
+
   tags = {
     Environment = var.environment
     Terraform   = "true"
