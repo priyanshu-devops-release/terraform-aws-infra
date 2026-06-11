@@ -33,7 +33,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: dev-standard
+        working-directory: iac-standard
 
     env:
       ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
