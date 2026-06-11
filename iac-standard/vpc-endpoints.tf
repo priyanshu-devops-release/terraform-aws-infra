@@ -11,8 +11,8 @@ module "STANDARD_VPC_ENDPOINTS" {
   aws_region         = var.aws_region
   environment        = var.environment
 
-  enable_ssm_endpoint = var.enable_ssm_endpoint  # Enable SSM endpoints when VPC is enabled
-  enable_s3_endpoint  = true                     # Always enable S3 gateway endpoint
+  enable_ssm_endpoint = var.enable_ssm_endpoint # Enable SSM endpoints when VPC is enabled
+  enable_s3_endpoint  = true                    # Always enable S3 gateway endpoint
 
   tags = {
     Environment = var.environment
