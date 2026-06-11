@@ -21,6 +21,13 @@ resource "aws_iam_role_policy_attachment" "this" {
   policy_arn = var.policy_arns[count.index]
 }
 
+# IAM Instance Profile
+resource "aws_iam_instance_profile" "this" {
+  count = var.create_role ? 1 : 0
+  name  = "${var.role_name}-profile"
+  role  = aws_iam_role.this[0].name
+}
+
 # Inline IAM Role Policy
 resource "aws_iam_role_policy" "this" {
   count = var.create_role && var.create_inline_policy ? 1 : 0

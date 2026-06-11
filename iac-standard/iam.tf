@@ -17,7 +17,8 @@ module "STANDARD_IAM_ROLE_S3" {
 
   policy_arns = [
     "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-    "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+    "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   ]
 
   tags = {

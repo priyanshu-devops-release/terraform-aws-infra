@@ -29,6 +29,12 @@ variable "public_key" {
   type        = string
 }
 
+variable "iam_instance_profile" {
+  description = "IAM instance profile name for EC2"
+  type        = string
+  default     = null
+}
+
 variable "enable_elastic_ip" {
   type        = bool
   description = "Enable Elastic IP for EC2, set false if EC2 is stopped frequently to avoid charges"

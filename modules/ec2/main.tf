@@ -5,6 +5,7 @@ resource "aws_instance" "this" {
   subnet_id     = var.subnet_id
   vpc_security_group_ids = compact([var.security_group_id])
   associate_public_ip_address = var.enable_public_ip
+  iam_instance_profile = var.iam_instance_profile
   key_name      = aws_key_pair.this[0].key_name
   user_data     = var.user_data_file
   user_data_replace_on_change = true
