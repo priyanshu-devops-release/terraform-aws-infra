@@ -3,7 +3,7 @@ module "STANDARD_VPC" {
   create_vpc          = var.pb_enable_dev_vpc ? true : false
   vpc_cidr            = var.vpc_cidr
   public_subnet_cidrs = var.public_subnets
-  # private_subnet_cidrs = var.private_subnets
+  private_subnet_cidrs = var.private_subnets
   availability_zones = var.availability_zones
   name               = "${var.environment}-vpc"
   tags = {
