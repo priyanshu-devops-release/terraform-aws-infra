@@ -27,8 +27,6 @@ pb_enable_dev_public_ip = false
 pb_enable_dev_alb_sg = false
 pb_enable_dev_alb = false
 pb_enable_ami_id = "ami-03e73877aee33eaf9" # Amazon Linux 2 AMI (HVM), SSD Volume Type
-private_subnets = ["10.0.101.0/24", "10.0.102.0/24"]
-
 instance_type = "t4g.medium"
 
 
