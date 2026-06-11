@@ -7,9 +7,6 @@ variable "subnet_id" {
 variable "security_group_id" {
     type = string
 }
-variable "key_name" {
-    type = string
-}
 variable "tags" {
   type = map(string)
 }
@@ -24,10 +21,7 @@ variable "ami_id" {
   description = "AMI ID for the EC2 instance"
   type        = string
 }
-variable "public_key" {
-  description = "Public key for EC2 SSH access"
-  type        = string
-}
+# public_key variable removed - using SSM Session Manager instead
 
 variable "iam_instance_profile" {
   description = "IAM instance profile name for EC2"

@@ -7,20 +7,39 @@ on:
 
   workflow_dispatch:
     inputs:
-      apply:
-        description: 'Terraform Deploy'
-        required: true
-        type: boolean
-        default: false
       environment:
-        description: 'Environment'
+        description: 'Select deployment environment'
         required: true
         type: choice
         options:
-        - dev
-        - staging
-        - prod
+          - dev
+          - staging
+          - prod
         default: dev
+      action:
+        description: 'Choose action: plan, apply, destroy, or plan-only'
+        required: true
+        type: choice
+        options:
+          - plan-only
+          - plan-and-apply
+          - destroy
+        default: plan-only
+      target:
+        description: 'Target specific resource (optional). Leave empty for all. Example: module.STANDARD_EC2 or aws_instance.this'
+        required: false
+        type: string
+        default: ''
+      auto_approve:
+        description: 'Auto-approve apply without manual confirmation (high risk!)'
+        required: false
+        type: boolean
+        default: false
+      var_overrides:
+        description: 'Variable overrides (optional, JSON format). Example: {"instance_type":"t3.large","pb_enable_dev_public_ip":true}'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   id-token: write
@@ -45,7 +64,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: .terraform
-        key: ${{ runner.os }}-terraform-${{ env.ENVIRONMENT }}-${{ hashFiles('dev-standard/.terraform.lock.hcl') }}
+        key: ${{ runner.os }}-terraform-${{ env.ENVIRONMENT }}-${{ hashFiles('iac-standard/.terraform.lock.hcl') }}
         restore-keys: |
           ${{ runner.os }}-terraform-${{ env.ENVIRONMENT }}-
 
@@ -81,10 +100,14 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     defaults:
       run:
-        working-directory: dev-standard
+        working-directory: iac-standard
 
     env:
       ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
+      ACTION: ${{ github.event.inputs.action || 'plan-only' }}
+      TARGET: ${{ github.event.inputs.target || '' }}
+      AUTO_APPROVE: ${{ github.event.inputs.auto_approve || 'false' }}
+      VAR_OVERRIDES: ${{ github.event.inputs.var_overrides || '' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -93,7 +116,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: .terraform
-        key: ${{ runner.os }}-terraform-${{ env.ENVIRONMENT }}-${{ hashFiles('dev-standard/.terraform.lock.hcl') }}
+        key: ${{ runner.os }}-terraform-${{ env.ENVIRONMENT }}-${{ hashFiles('iac-standard/.terraform.lock.hcl') }}
         restore-keys: |
           ${{ runner.os }}-terraform-${{ env.ENVIRONMENT }}-
 
@@ -112,48 +135,74 @@ jobs:
         set -e
         terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf || true
         TIMESTAMP=$(date +%s)
-        terraform state pull > ${ENVIRONMENT}-state-${TIMESTAMP}.json || echo "no state to pull"
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: ${{ env.ENVIRONMENT }}-state-backup
-        path: dev-standard/${{ env.ENVIRONMENT }}-state-*.json
-        retention-days: 10
+        terraform state pull > /tmp/${ENVIRONMENT}-state-${TIMESTAMP}.json 2>/dev/null || echo "no state to pull"
+        # Remove state file to prevent accidental exposure
+        rm -f /tmp/${ENVIRONMENT}-state-${TIMESTAMP}.json
 
     - name: Terraform Init & Plan
       run: |
+        set -e
         terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf
-        terraform plan \
-          -var-file=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}.tfvars \
-          -out=${{ env.ENVIRONMENT }}-tfplan \
-          -input=false
+        
+        # Build plan command with optional target and var overrides
+        PLAN_CMD="terraform plan -var-file=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}.tfvars -out=${{ env.ENVIRONMENT }}-tfplan -input=false -no-color"
+        
+        # Add target if specified
+        if [ ! -z "$TARGET" ]; then
+          echo "ℹ️  Targeting: $TARGET"
+          PLAN_CMD="$PLAN_CMD -target=$TARGET"
+        fi
+        
+        # Add variable overrides if specified (parse JSON)
+        if [ ! -z "$VAR_OVERRIDES" ]; then
+          echo "ℹ️  Applying variable overrides..."
+          # Convert JSON to -var flags
+          echo "$VAR_OVERRIDES" | jq -r 'to_entries[] | "-var=\(.key)=\(.value | @json)"' | while read VAR; do
+            PLAN_CMD="$PLAN_CMD $VAR"
+          done
+        fi
+        
+        # Execute plan
+        eval "$PLAN_CMD"
+        
+        # Save action to file for apply job
+        echo "$ACTION" > /tmp/action.txt
 
     - name: Export human-readable plan
       run: |
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "🔍 Plan Summary for [${{ env.ENVIRONMENT }}]"
+        echo "Action: ${{ env.ACTION }}"
+        if [ ! -z "${{ env.TARGET }}" ]; then
+          echo "Target: ${{ env.TARGET }}"
+        fi
+        if [ ! -z "${{ env.VAR_OVERRIDES }}" ]; then
+          echo "Variable Overrides: Applied"
+        fi
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        
         terraform show -no-color ${ENVIRONMENT}-tfplan > ${ENVIRONMENT}-tfplan.txt
+        # Mask sensitive values in output
+        sed -i 's/password\s*=.*$/password = "***MASKED**"/g' ${ENVIRONMENT}-tfplan.txt
+        sed -i 's/token\s*=.*$/token = "***MASKED**"/g' ${ENVIRONMENT}-tfplan.txt
+        sed -i 's/secret\s*=.*$/secret = "***MASKED**"/g' ${ENVIRONMENT}-tfplan.txt
+        sed -i 's/api_key\s*=.*$/api_key = "***MASKED**"/g' ${ENVIRONMENT}-tfplan.txt
+        sed -i 's/private_key\s*=.*$/private_key = "***MASKED**"/g' ${ENVIRONMENT}-tfplan.txt
 
-    - name: Debug before upload
-      run: |
-        echo "DEBUG: working dir: $(pwd)"
-        echo "DEBUG: files:" 
-        ls -la
-        echo "DEBUG: plan files match for ${ENVIRONMENT}:"
-        ls -la ${ENVIRONMENT}-tfplan* || true
-
-    - uses: actions/upload-artifact@v4
+    - name: Upload binary tfplan (for apply job)
+      if: github.event.inputs.action != 'plan-only'
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ env.ENVIRONMENT }}-tfplan-package
-        path: |
-          dev-standard/${{ env.ENVIRONMENT }}-tfplan
-          dev-standard/${{ env.ENVIRONMENT }}-tfplan.txt
-        retention-days: 10
+        path: ${{ env.ENVIRONMENT }}-tfplan
+        retention-days: 1
         if-no-files-found: error
 
     - name: Plan summary (visible in logs)
       run: |
-        echo "----- Plan summary (${ENVIRONMENT}) (first 200 lines) -----"
+        echo "----- Plan summary (${ENVIRONMENT}) (first 100 lines) -----"
         if [ -f "${ENVIRONMENT}-tfplan.txt" ]; then
-          head -n 200 "${ENVIRONMENT}-tfplan.txt" || true
+          head -n 100 "${ENVIRONMENT}-tfplan.txt" || true
         else
           echo "Plan text file not found: ${ENVIRONMENT}-tfplan.txt"
         fi
@@ -170,54 +219,109 @@ jobs:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
   terraform:
-    name: Terraform Apply
+    name: Terraform Apply/Destroy
     runs-on: ubuntu-latest
     needs:
     - validate
     - plan
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true'
+    if: github.event_name == 'workflow_dispatch' && (github.event.inputs.action == 'plan-and-apply' || github.event.inputs.action == 'destroy')
     environment: terraform-apply-${{ github.event.inputs.environment || 'dev' }}
 
     defaults:
       run:
-        working-directory: dev-standard
+        working-directory: iac-standard
 
     env:
       ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
+      ACTION: ${{ github.event.inputs.action || 'plan-and-apply' }}
+      AUTO_APPROVE: ${{ github.event.inputs.auto_approve || 'false' }}
+      TARGET: ${{ github.event.inputs.target || '' }}
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: ⏸️  Approval Required
+      if: github.event.inputs.auto_approve == 'false'
+      uses: trstringer/manual-approval@v1
+      with:
+        secret: ${{ github.TOKEN }}
+        approvers: ${{ secrets.TERRAFORM_APPROVERS }}
+        minimum-approvals: 1
+        issue-title: "⏳ Approval needed for Terraform ${{ github.event.inputs.action }} on ${{ github.event.inputs.environment }}"
+        issue-body: |
+          **Environment:** ${{ github.event.inputs.environment }}
+          **Action:** ${{ github.event.inputs.action }}
+          **Target:** ${{ github.event.inputs.target || 'All resources' }}
+          **Requested by:** ${{ github.actor }}
+          **Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          
+          ⚠️ **REVIEW THE PLAN ABOVE BEFORE APPROVING**
+
+    - uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.14.3
+
+    - name: Configure AWS credentials (OIDC)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_OIDC_ROLE }}
+        aws-region: ${{ vars.AWS_REGION }}
 
     - uses: actions/download-artifact@v4
       with:
         name: ${{ env.ENVIRONMENT }}-tfplan-package
         path: .
+      continue-on-error: true
 
-    - name: Show plan files and summary
+    - name: Verify plan exists
+      if: github.event.inputs.action == 'plan-and-apply'
       run: |
-        echo "Downloaded files:"
-        ls -la
-        echo "\n----- Plan summary (first 400 lines) -----\n"
-        head -n 400 ${ENVIRONMENT}-tfplan.txt || true
+        if [ ! -f "${ENVIRONMENT}-tfplan" ]; then
+          echo "ERROR: Terraform plan not found!"
+          exit 1
+        fi
 
-    - name: Create pre-apply state backup
+    - name: Terraform Init & Execute
       run: |
         set -e
-        terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf || true
-        TIMESTAMP=$(date +%s)
-        terraform state pull > ${ENVIRONMENT}-state-${TIMESTAMP}.json || echo "no state to pull"
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: ${{ env.ENVIRONMENT }}-state-backup
-        path: dev-standard/${{ env.ENVIRONMENT }}-state-*.json
-        retention-days: 10
-        if-no-files-found: warn
-
-    - name: Terraform Init & Apply
-      run: |
         terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf
-        terraform apply -input=false ${ENVIRONMENT}-tfplan
+        
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "🚀 Executing: $ACTION"
+        echo "Environment: $ENVIRONMENT"
+        if [ ! -z "$TARGET" ]; then
+          echo "Target: $TARGET"
+        fi
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        
+        if [ "$ACTION" == "destroy" ]; then
+          # Destroy mode
+          echo "⚠️  WARNING: This will destroy infrastructure!"
+          DESTROY_CMD="terraform destroy -no-color -input=false"
+          
+          if [ ! -z "$TARGET" ]; then
+            DESTROY_CMD="$DESTROY_CMD -target=$TARGET"
+          fi
+          
+          if [ "$AUTO_APPROVE" == "true" ]; then
+            echo "Auto-approving destroy (no manual confirmation)"
+            DESTROY_CMD="$DESTROY_CMD -auto-approve"
+          fi
+          
+          eval "$DESTROY_CMD" > /tmp/action-output.log 2>&1
+        else
+          # Apply mode (from plan)
+          echo "✅ Applying Terraform plan..."
+          terraform apply -input=false -no-color ${ENVIRONMENT}-tfplan > /tmp/action-output.log 2>&1
+        fi
+        
+        # Show only status
+        if grep -qE "(Apply complete|Destroy complete)" /tmp/action-output.log; then
+          echo "✅ $ACTION completed successfully"
+        else
+          echo "⚠️  Check status in AWS console"
+        fi
+        rm -f /tmp/action-output.log
 
     - name: Slack Notification
       if: always()
