@@ -129,3 +129,10 @@ variable "create_role" {
   type        = bool
   default     = false
 }
+
+# SSM Session Manager variable
+variable "enable_ssm_endpoint" {
+  description = "Whether to create SSM VPC endpoints..."
+  type        = bool
+  default     = false
+}

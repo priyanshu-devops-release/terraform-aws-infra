@@ -1,83 +1,23 @@
-# VPC Endpoints for SSM (Systems Manager) - Required for private EC2 instances
-# These endpoints allow EC2 instances in private subnets to communicate with SSM service
+# VPC Endpoints Module for SSM Session Manager
+# Required for private EC2 instances to access AWS Systems Manager service
 
-# VPC Endpoint for Systems Manager Service
-resource "aws_vpc_endpoint" "ssm" {
-  vpc_id            = module.STANDARD_VPC.vpc_id
-  service_name      = "com.amazonaws.${var.aws_region}.ssm"
-  vpc_endpoint_type = "Interface"
+module "STANDARD_VPC_ENDPOINTS" {
+  source = "../modules/vpc-endpoints"
 
-  subnet_ids          = module.STANDARD_VPC.private_subnet_ids
-  security_group_ids  = [aws_security_group.vpc_endpoint_sg.id]
-  private_dns_enabled = true
+  vpc_id             = module.STANDARD_VPC.vpc_id
+  vpc_cidr           = var.vpc_cidr
+  private_subnet_ids = module.STANDARD_VPC.private_subnet_ids
+  aws_region         = var.aws_region
+  environment        = var.environment
+
+  enable_ssm_endpoint = var.enable_ssm_endpoint  # Enable SSM endpoints when VPC is enabled
+  enable_s3_endpoint  = true                   # Always enable S3 gateway endpoint
 
   tags = {
-    Name        = "${var.environment}-ssm-endpoint"
     Environment = var.environment
     Terraform   = "true"
   }
+
+  depends_on = [module.STANDARD_VPC]
 }
 
-# VPC Endpoint for EC2 Messages
-resource "aws_vpc_endpoint" "ec2messages" {
-  vpc_id            = module.STANDARD_VPC.vpc_id
-  service_name      = "com.amazonaws.${var.aws_region}.ec2messages"
-  vpc_endpoint_type = "Interface"
-
-  subnet_ids          = module.STANDARD_VPC.private_subnet_ids
-  security_group_ids  = [aws_security_group.vpc_endpoint_sg.id]
-  private_dns_enabled = true
-
-  tags = {
-    Name        = "${var.environment}-ec2messages-endpoint"
-    Environment = var.environment
-    Terraform   = "true"
-  }
-}
-
-# VPC Endpoint for SSM Messages
-resource "aws_vpc_endpoint" "ssmmessages" {
-  vpc_id            = module.STANDARD_VPC.vpc_id
-  service_name      = "com.amazonaws.${var.aws_region}.ssmmessages"
-  vpc_endpoint_type = "Interface"
-
-  subnet_ids          = module.STANDARD_VPC.private_subnet_ids
-  security_group_ids  = [aws_security_group.vpc_endpoint_sg.id]
-  private_dns_enabled = true
-
-  tags = {
-    Name        = "${var.environment}-ssmmessages-endpoint"
-    Environment = var.environment
-    Terraform   = "true"
-  }
-}
-
-# Security Group for VPC Endpoints
-resource "aws_security_group" "vpc_endpoint_sg" {
-  name_prefix = "${var.environment}-vpc-endpoint-"
-  description = "Security group for VPC endpoints"
-  vpc_id      = module.STANDARD_VPC.vpc_id
-
-  # Allow HTTPS from private subnets
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = var.private_subnets
-    description = "HTTPS from private subnets for SSM endpoints"
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow all outbound"
-  }
-
-  tags = {
-    Name        = "${var.environment}-vpc-endpoint-sg"
-    Environment = var.environment
-    Terraform   = "true"
-  }
-}
