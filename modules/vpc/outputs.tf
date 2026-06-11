@@ -6,6 +6,6 @@ output "public_subnet_ids" {
   value = length(aws_subnet.public) > 0 ? aws_subnet.public[*].id : []
 }
 
-# output "private_subnet_ids" {
-#   value = length(aws_subnet.private) > 0 ? aws_subnet.private[*].id : []
-# }
+output "private_subnet_ids" {
+  value = length(aws_subnet.private) > 0 ? aws_subnet.private[*].id : []
+}
