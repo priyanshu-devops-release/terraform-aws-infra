@@ -34,10 +34,6 @@ variable "cluster_version" {
   default = "1.29"
 }
 
-variable "key_name" {
-  description = "EC2 keypair name"
-}
-
 variable "instance_type" {
   description = "EC2 instance type"
   default     = "t2.micro"
@@ -113,6 +109,18 @@ variable "create_encryption" {
   description = "Whether to create encryption configuration"
   type        = bool
   default     = false
+}
+
+variable "create_acl" {
+  description = "Whether to create ACL configuration"
+  type        = bool
+  default     = false
+}
+
+variable "acl" {
+  description = "Canned ACL for the S3 bucket"
+  type        = string
+  default     = "private"
 }
 
 # IAM Role variables
