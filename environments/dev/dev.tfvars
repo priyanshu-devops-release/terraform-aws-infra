@@ -1,8 +1,7 @@
 # Configuration for vpc
 pb_enable_dev_vpc = false
 aws_region = "us-west-2"
-vpc_name   = "dev-vpc"
-environment = "platform-dev"
+environment = "platform-dev-us-west-2"
 enable_s3_bucket = false
 enable_nat_gateway = false
 availability_zones = ["us-west-2a", "us-west-2b"]
@@ -28,8 +27,9 @@ pb_enable_dev_public_ip = false
 pb_enable_dev_alb_sg = false
 pb_enable_dev_alb = false
 pb_enable_ami_id = "ami-03e73877aee33eaf9" # Amazon Linux 2 AMI (HVM), SSD Volume Type
+private_subnets = ["10.0.101.0/24", "10.0.102.0/24"]
 key_name = "dev-key"
-instance_type = "t3.medium"
+instance_type = "t4g.medium"
 
 
 # S3 Bucket configuration

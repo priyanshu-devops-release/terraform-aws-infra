@@ -1,4 +1,4 @@
-module "DEV_VPC" {
+module "STANDARD_VPC" {
   source              = "../modules/vpc"
   create_vpc          = var.pb_enable_dev_vpc ? true : false
   vpc_cidr            = var.vpc_cidr

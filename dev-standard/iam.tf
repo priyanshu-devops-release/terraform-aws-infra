@@ -1,4 +1,4 @@
-module "DEV_STANDARD_IAM_ROLE_S3" {
+module "STANDARD_IAM_ROLE_S3" {
   source      = "../modules/iam-role"
   create_role = var.create_role
   role_name   = "${var.environment}-s3-role"

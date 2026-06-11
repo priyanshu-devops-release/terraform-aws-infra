@@ -1,9 +1,9 @@
-module "DEV_SG" {
+module "STANDARD_SG" {
   source                = "../modules/security-group"
   create_security_group = var.pb_enable_dev_ec2_sg && var.pb_enable_dev_vpc ? true : false
   name                  = "${var.environment}-devops-sg"
   description           = "Security group for DevOps EC2"
-  vpc_id                = module.DEV_VPC.vpc_id
+  vpc_id                = module.STANDARD_VPC.vpc_id
   ingress_rules = [
     {
       name        = "SSH"
@@ -46,15 +46,15 @@ module "DEV_SG" {
     Environment = var.environment
     Terraform   = "true"
   }
-  depends_on = [module.DEV_VPC]
+  depends_on = [module.STANDARD_VPC]
 }
 
-module "DEV_ALB_SG" {
+module "STANDARD_ALB_SG" {
   source                = "../modules/security-group"
   create_security_group = var.pb_enable_dev_alb_sg && var.pb_enable_dev_vpc ? true : false
   name                  = "${var.environment}-alb-sg"
   description           = "ALB Security Group"
-  vpc_id                = module.DEV_VPC.vpc_id
+  vpc_id                = module.STANDARD_VPC.vpc_id
 
   ingress_rules = [
     {

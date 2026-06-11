@@ -8,22 +8,22 @@
 #   value = module.DEV_SNS.sns_topic_arn
 # }
 output "DEV_VPC" {
-  value = module.DEV_VPC.vpc_id
+  value = module.STANDARD_VPC.vpc_id
 }
 
 output "DEV_EC2" {
-  value = module.DEV_EC2.public_ip
+  value = module.STANDARD_EC2.public_ip
 }
 
 output "DEV_ALB_SG" {
-  value = module.DEV_ALB_SG.security_group_id
+  value = module.STANDARD_ALB_SG.security_group_id
 }
 # output "DEV_EKS" {
 #   value = module.DEV_EKS.cluster_name
 # }
 output "DEV_SG" {
-  value = module.DEV_SG.security_group_id
+  value = module.STANDARD_SG.security_group_id
 }
 output "DEV_STANDARD_S3_HELM_CHARTS" {
-  value = module.DEV_STANDARD_S3_HELM_CHARTS.bucket_id
+  value = module.STANDARD_S3_HELM_CHARTS.bucket_id
 }
