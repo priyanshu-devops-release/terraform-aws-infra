@@ -21,8 +21,8 @@ output "DEV_ALB_SG" {
 # output "DEV_EKS" {
 #   value = module.DEV_EKS.cluster_name
 # }
-output "DEV_SG" {
-  value = module.STANDARD_SG.security_group_id
+output "STANDARD_PRIVATE_SG" {
+  value = module.STANDARD_PRIVATE_SG.security_group_id
 }
 output "DEV_STANDARD_S3_HELM_CHARTS" {
   value = module.STANDARD_S3_HELM_CHARTS.bucket_id

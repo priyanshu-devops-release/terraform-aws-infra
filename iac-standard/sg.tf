@@ -1,7 +1,7 @@
-module "STANDARD_SG" {
+module "STANDARD_PUBLIC_SG" {
   source                = "../modules/security-group"
   create_security_group = var.pb_enable_dev_ec2_sg && var.pb_enable_dev_vpc ? true : false
-  name                  = "${var.environment}-devops-sg"
+  name                  = "${var.environment}-public-sg"
   description           = "Security group for DevOps EC2"
   vpc_id                = module.STANDARD_VPC.vpc_id
   ingress_rules = [
@@ -81,4 +81,27 @@ module "STANDARD_ALB_SG" {
     Environment = var.environment
     Terraform   = "true"
   }
+}
+
+module "STANDARD_PRIVATE_SG" {
+  source                = "../modules/security-group"
+  create_security_group = var.pb_enable_dev_ec2_sg && var.pb_enable_dev_vpc ? true : false
+  name                  = "${var.environment}-private-sg"
+  description           = "Security group for DevOps EC2"
+  vpc_id                = module.STANDARD_VPC.vpc_id
+  ingress_rules = [
+    {
+      name        = "HTTPS"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+  ]
+
+  tags = {
+    Environment = var.environment
+    Terraform   = "true"
+  }
+  depends_on = [module.STANDARD_VPC]
 }
