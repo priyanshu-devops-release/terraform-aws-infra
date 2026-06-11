@@ -1,4 +1,4 @@
-# VPC Endpoint for Systems Manager Service
+# VPC Endpoint for Systems Manager Service (REQUIRED)
 resource "aws_vpc_endpoint" "ssm" {
   count             = var.enable_ssm_endpoint ? 1 : 0
   vpc_id            = var.vpc_id
@@ -17,9 +17,9 @@ resource "aws_vpc_endpoint" "ssm" {
   )
 }
 
-# VPC Endpoint for EC2 Messages (required for SSM Session Manager)
+# VPC Endpoint for EC2 Messages (OPTIONAL - only if create_all_ssm_endpoints = true)
 resource "aws_vpc_endpoint" "ec2messages" {
-  count             = var.enable_ssm_endpoint ? 1 : 0
+  count             = var.enable_ssm_endpoint && var.create_all_ssm_endpoints ? 1 : 0
   vpc_id            = var.vpc_id
   service_name      = "com.amazonaws.${var.aws_region}.ec2messages"
   vpc_endpoint_type = "Interface"
@@ -36,9 +36,9 @@ resource "aws_vpc_endpoint" "ec2messages" {
   )
 }
 
-# VPC Endpoint for SSM Messages (required for SSM Session Manager)
+# VPC Endpoint for SSM Messages (OPTIONAL - only if create_all_ssm_endpoints = true)
 resource "aws_vpc_endpoint" "ssmmessages" {
-  count             = var.enable_ssm_endpoint ? 1 : 0
+  count             = var.enable_ssm_endpoint && var.create_all_ssm_endpoints ? 1 : 0
   vpc_id            = var.vpc_id
   service_name      = "com.amazonaws.${var.aws_region}.ssmmessages"
   vpc_endpoint_type = "Interface"

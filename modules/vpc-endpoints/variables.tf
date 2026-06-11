@@ -30,7 +30,13 @@ variable "environment" {
 }
 
 variable "enable_ssm_endpoint" {
-  description = "Whether to create SSM VPC endpoints (required for Session Manager on private EC2)"
+  description = "Whether to create SSM VPC endpoint (required for Session Manager on private EC2)"
+  type        = bool
+  default     = true
+}
+
+variable "create_all_ssm_endpoints" {
+  description = "Whether to create all SSM endpoints (EC2Messages, SSMMessages). Set to false to save costs (~₹1,200/month)"
   type        = bool
   default     = false
 }
