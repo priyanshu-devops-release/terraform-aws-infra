@@ -45,6 +45,7 @@ module "STANDARD_PUBLIC_SG" {
   tags = {
     Environment = var.environment
     Terraform   = "true"
+    name        = "${var.environment}-public-sg"
   }
   depends_on = [module.STANDARD_VPC]
 }
@@ -80,6 +81,7 @@ module "STANDARD_ALB_SG" {
   tags = {
     Environment = var.environment
     Terraform   = "true"
+    name        = "${var.environment}-alb-sg"
   }
 }
 
@@ -102,6 +104,7 @@ module "STANDARD_PRIVATE_SG" {
   tags = {
     Environment = var.environment
     Terraform   = "true"
+    name        = "${var.environment}-private-sg"
   }
   depends_on = [module.STANDARD_VPC]
 }

@@ -11,5 +11,6 @@ module "STANDARD_ALB" {
   tags = {
     Environment = var.environment
     Terraform   = "true"
+    name        = "${var.environment}-alb"
   }
 }

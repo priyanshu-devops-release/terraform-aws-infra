@@ -9,5 +9,6 @@ module "STANDARD_S3_HELM_CHARTS" {
   tags = {
     Environment = var.environment
     terraform   = "true"
+    name        = "${var.environment}-s3-helm-charts"
   }
 }

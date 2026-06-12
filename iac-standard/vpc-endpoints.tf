@@ -17,6 +17,7 @@ module "STANDARD_VPC_ENDPOINTS" {
   tags = {
     Environment = var.environment
     Terraform   = "true"
+    name        = "${var.environment}-vpc-endpoints"
   }
 
   depends_on = [module.STANDARD_VPC]

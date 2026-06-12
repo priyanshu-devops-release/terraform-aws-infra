@@ -14,5 +14,6 @@ module "STANDARD_EC2" {
   tags = {
     Environment = var.environment
     Terraform   = "true"
+    name        = "${var.environment}-ec2-instance"
   }
 }
