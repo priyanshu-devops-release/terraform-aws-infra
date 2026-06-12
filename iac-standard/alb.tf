@@ -1,6 +1,6 @@
 module "STANDARD_ALB" {
   source               = "../modules/load-balancer"
-  create_load_balancer = var.pb_enable_dev_alb ? true : false
+  create_load_balancer = var.pb_enable_alb ? true : false
   name                 = "${var.environment}-alb"
   vpc_id               = module.STANDARD_VPC.vpc_id
   subnet_ids           = module.STANDARD_VPC.public_subnet_ids

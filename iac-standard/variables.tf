@@ -39,7 +39,7 @@ variable "instance_type" {
   default     = "t2.micro"
 }
 
-variable "pb_enable_dev_vpc" {
+variable "pb_enable_vpc" {
   type    = bool
   default = false
 }
@@ -49,12 +49,12 @@ variable "pb_enable_dev_eks" {
   default = false
 }
 
-variable "pb_enable_dev_ec2" {
+variable "pb_enable_ec2" {
   type    = bool
   default = false
 }
 
-variable "pb_enable_dev_alb_sg" {
+variable "pb_enable_alb_sg" {
   type    = bool
   default = false
 }
@@ -66,11 +66,11 @@ variable "pb_enable_private_sg" {
   type    = bool
   default = false
 }
-variable "pb_enable_dev_alb" {
+variable "pb_enable_alb" {
   type    = bool
   default = false
 }
-variable "pb_enable_dev_elastic_ip" {
+variable "pb_enable_elastic_ip" {
   type    = bool
   default = false
 }
@@ -79,7 +79,7 @@ variable "pb_enable_ami_id" {
   type        = string
 }
 
-variable "pb_enable_dev_public_ip" {
+variable "pb_enable_public_ip" {
   type    = bool
   default = false
 }

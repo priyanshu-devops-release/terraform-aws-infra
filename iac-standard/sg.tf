@@ -1,6 +1,6 @@
 module "STANDARD_PUBLIC_SG" {
   source                = "../modules/security-group"
-  create_security_group = var.pb_enable_public_sg && var.pb_enable_dev_vpc ? true : false
+  create_security_group = var.pb_enable_public_sg && var.pb_enable_vpc ? true : false
   name                  = "${var.environment}-public-sg"
   description           = "Security group for DevOps EC2"
   vpc_id                = module.STANDARD_VPC.vpc_id
@@ -52,7 +52,7 @@ module "STANDARD_PUBLIC_SG" {
 
 module "STANDARD_ALB_SG" {
   source                = "../modules/security-group"
-  create_security_group = var.pb_enable_dev_alb_sg && var.pb_enable_dev_vpc ? true : false
+  create_security_group = var.pb_enable_alb_sg && var.pb_enable_vpc ? true : false
   name                  = "${var.environment}-alb-sg"
   description           = "ALB Security Group"
   vpc_id                = module.STANDARD_VPC.vpc_id
@@ -87,7 +87,7 @@ module "STANDARD_ALB_SG" {
 
 module "STANDARD_PRIVATE_SG" {
   source                = "../modules/security-group"
-  create_security_group = var.pb_enable_private_sg && var.pb_enable_dev_vpc ? true : false
+  create_security_group = var.pb_enable_private_sg && var.pb_enable_vpc ? true : false
   name                  = "${var.environment}-private-sg"
   description           = "Security group for DevOps EC2"
   vpc_id                = module.STANDARD_VPC.vpc_id
