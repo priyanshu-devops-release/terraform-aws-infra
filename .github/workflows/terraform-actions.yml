@@ -168,44 +168,21 @@ jobs:
         # Save action to file for apply job
         echo "$ACTION" > /tmp/action.txt
 
-    - name: Export human-readable plan
+    - name: Verify plan file
+      working-directory: iac-standard
       run: |
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "🔍 Plan Summary for [${{ env.ENVIRONMENT }}]"
-        echo "Action: ${{ env.ACTION }}"
-        if [ ! -z "${{ env.TARGET }}" ]; then
-          echo "Target: ${{ env.TARGET }}"
-        fi
-        if [ ! -z "${{ env.VAR_OVERRIDES }}" ]; then
-          echo "Variable Overrides: Applied"
-        fi
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        
-        terraform show -no-color ${ENVIRONMENT}-tfplan > ${ENVIRONMENT}-tfplan.txt
-        # Mask sensitive values in output
-        sed -i 's/password\s*=.*$/password = "***MASKED**"/g' ${ENVIRONMENT}-tfplan.txt
-        sed -i 's/token\s*=.*$/token = "***MASKED**"/g' ${ENVIRONMENT}-tfplan.txt
-        sed -i 's/secret\s*=.*$/secret = "***MASKED**"/g' ${ENVIRONMENT}-tfplan.txt
-        sed -i 's/api_key\s*=.*$/api_key = "***MASKED**"/g' ${ENVIRONMENT}-tfplan.txt
-        sed -i 's/private_key\s*=.*$/private_key = "***MASKED**"/g' ${ENVIRONMENT}-tfplan.txt
+        pwd
+        ls -lah
+        test -f ${ENVIRONMENT}-tfplan && echo "Plan exists"
 
     - name: Upload binary tfplan (for apply job)
       if: github.event.inputs.action != 'plan-only'
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.ENVIRONMENT }}-tfplan-package
-        path: ${{ env.ENVIRONMENT }}-tfplan
+        path: iac-standard/${{ env.ENVIRONMENT }}-tfplan
         retention-days: 1
         if-no-files-found: error
-
-    - name: Plan summary (visible in logs)
-      run: |
-        echo "----- Plan summary (${ENVIRONMENT}) (first 100 lines) -----"
-        if [ -f "${ENVIRONMENT}-tfplan.txt" ]; then
-          head -n 100 "${ENVIRONMENT}-tfplan.txt" || true
-        else
-          echo "Plan text file not found: ${ENVIRONMENT}-tfplan.txt"
-        fi
 
     - name: Slack Notification
       if: always()
