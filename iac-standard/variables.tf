@@ -58,7 +58,11 @@ variable "pb_enable_dev_alb_sg" {
   type    = bool
   default = false
 }
-variable "pb_enable_dev_ec2_sg" {
+variable "pb_enable_public_sg" {
+  type    = bool
+  default = false
+}
+variable "pb_enable_private_sg" {
   type    = bool
   default = false
 }
