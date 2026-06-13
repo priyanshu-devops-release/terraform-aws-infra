@@ -139,7 +139,7 @@ jobs:
         set -e
         terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf
 
-        PLAN_CMD="terraform plan -var-file=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}.tfvars -out=${{ env.ENVIRONMENT }}.tfplan -input=false -no-color"
+        PLAN_CMD="terraform plan -var-file=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}.tfvars -out=${{ env.ENVIRONMENT }}.tfplan -input=false"
 
         if [ -n "$TARGET" ]; then
           echo "ℹ️  Targeting: $TARGET"
@@ -257,7 +257,7 @@ jobs:
 
         if [ "$ACTION" == "destroy" ]; then
           echo "⚠️  WARNING: This will destroy infrastructure!"
-          DESTROY_CMD="terraform destroy -var-file=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}.tfvars -no-color -input=false"
+          DESTROY_CMD="terraform destroy -var-file=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}.tfvars -input=false"
 
           if [ -n "$TARGET" ]; then
             DESTROY_CMD="$DESTROY_CMD -target=$TARGET"
@@ -271,7 +271,7 @@ jobs:
           eval "$DESTROY_CMD" > /tmp/action-output.log 2>&1
         else
           echo "✅ Applying Terraform plan..."
-          terraform apply -input=false -no-color ${ENVIRONMENT}.tfplan > /tmp/action-output.log 2>&1
+          terraform apply -input=false ${ENVIRONMENT}.tfplan > /tmp/action-output.log 2>&1
         fi
 
         if grep -qE "(Apply complete|Destroy complete)" /tmp/action-output.log; then
