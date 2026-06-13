@@ -140,3 +140,16 @@ variable "enable_ssm_endpoint" {
   type        = bool
   default     = false
 }
+
+# SSM Session Manager variable to create all endpoints (EC2Messages, SSMMessages) instead of just the core SSM endpoint - set to false to save costs (~₹1,200/month)
+variable "create_all_ssm_endpoints" {
+  description = "Whether to create all SSM endpoints (EC2Messages, SSMMessages). Set to false to save costs (~₹1,200/month)"
+  type        = bool
+  default     = false
+}
+
+variable "create_s3_endpoint" {
+  description = "Whether to create S3 gateway endpoint (always recommended for private subnets)"
+  type        = bool
+  default     = true
+}

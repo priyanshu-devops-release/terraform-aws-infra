@@ -29,7 +29,7 @@ variable "environment" {
   type        = string
 }
 
-variable "enable_ssm_endpoint" {
+variable "create_ssm_endpoint" {
   description = "Whether to create SSM VPC endpoint (required for Session Manager on private EC2)"
   type        = bool
   default     = true
@@ -41,7 +41,7 @@ variable "create_all_ssm_endpoints" {
   default     = false
 }
 
-variable "enable_s3_endpoint" {
+variable "create_s3_endpoint" {
   description = "Whether to create S3 gateway endpoint"
   type        = bool
   default     = true

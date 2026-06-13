@@ -1,6 +1,6 @@
 # VPC Endpoint for Systems Manager Service (REQUIRED)
 resource "aws_vpc_endpoint" "ssm" {
-  count             = var.enable_ssm_endpoint ? 1 : 0
+  count             = var.create_ssm_endpoint ? 1 : 0
   vpc_id            = var.vpc_id
   service_name      = "com.amazonaws.${var.aws_region}.ssm"
   vpc_endpoint_type = "Interface"
@@ -19,7 +19,7 @@ resource "aws_vpc_endpoint" "ssm" {
 
 # VPC Endpoint for EC2 Messages (OPTIONAL - only if create_all_ssm_endpoints = true)
 resource "aws_vpc_endpoint" "ec2messages" {
-  count             = var.enable_ssm_endpoint && var.create_all_ssm_endpoints ? 1 : 0
+  count             = var.create_ssm_endpoint && var.create_all_ssm_endpoints ? 1 : 0
   vpc_id            = var.vpc_id
   service_name      = "com.amazonaws.${var.aws_region}.ec2messages"
   vpc_endpoint_type = "Interface"
@@ -38,7 +38,7 @@ resource "aws_vpc_endpoint" "ec2messages" {
 
 # VPC Endpoint for SSM Messages (OPTIONAL - only if create_all_ssm_endpoints = true)
 resource "aws_vpc_endpoint" "ssmmessages" {
-  count             = var.enable_ssm_endpoint && var.create_all_ssm_endpoints ? 1 : 0
+  count             = var.create_ssm_endpoint && var.create_all_ssm_endpoints ? 1 : 0
   vpc_id            = var.vpc_id
   service_name      = "com.amazonaws.${var.aws_region}.ssmmessages"
   vpc_endpoint_type = "Interface"
@@ -57,7 +57,7 @@ resource "aws_vpc_endpoint" "ssmmessages" {
 
 # Gateway Endpoint for S3
 resource "aws_vpc_endpoint" "s3" {
-  count             = var.enable_s3_endpoint ? 1 : 0
+  count             = var.create_s3_endpoint ? 1 : 0
   vpc_id            = var.vpc_id
   service_name      = "com.amazonaws.${var.aws_region}.s3"
   vpc_endpoint_type = "Gateway"
@@ -74,7 +74,7 @@ resource "aws_vpc_endpoint" "s3" {
 
 # Security Group for VPC Endpoints
 resource "aws_security_group" "vpc_endpoint_sg" {
-  count       = var.enable_ssm_endpoint ? 1 : 0
+  count       = var.create_ssm_endpoint ? 1 : 0
   name        = "${var.environment}-vpc-endpoint-sg"
   description = "Security group for VPC Endpoints"
   vpc_id      = var.vpc_id
