@@ -163,10 +163,7 @@ jobs:
     - name: Upload tfplan to S3
       if: github.event.inputs.action != 'plan-only'
       run: |
-        aws s3 cp ${ENVIRONMENT}-tfplan \
-          s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }} \
-          --sse aws:kms \
-          --no-progress
+        aws s3 cp ${ENVIRONMENT}-tfplan s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }} --sse aws:kms --no-progress
         echo "✅ Plan uploaded to s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }}"
 
     - name: Slack Notification
@@ -234,10 +231,7 @@ jobs:
     - name: Download tfplan from S3
       if: github.event.inputs.action == 'plan-and-apply'
       run: |
-        aws s3 cp \
-          s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }} \
-          ${ENVIRONMENT}-tfplan \
-          --no-progress
+        aws s3 cp s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }} ${ENVIRONMENT}-tfplan --no-progress
         echo "✅ Plan downloaded from s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }}"
 
     - name: Verify plan exists
@@ -286,12 +280,6 @@ jobs:
           echo "⚠️  Check status in AWS console"
         fi
         rm -f /tmp/action-output.log
-
-    - name: Delete tfplan from S3
-      if: always() && github.event.inputs.action == 'plan-and-apply'
-      run: |
-        aws s3 rm s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }} || true
-        echo "🗑️  Plan cleaned up from S3"
 
     - name: Slack Notification
       if: always()
