@@ -271,10 +271,10 @@ jobs:
           eval "$DESTROY_CMD" > /tmp/action-output.log 2>&1
         else
           echo "✅ Applying Terraform plan..."
-          terraform apply -input=false ${ENVIRONMENT}.tfplan > /tmp/action-output.log 2>&1
+          terraform apply -input=false ${ENVIRONMENT}.tfplan
         fi
 
-        if grep -qE "(Apply complete|Destroy complete)" /tmp/action-output.log; then
+        if grep -qE "(Apply complete|Destroy complete)"; then
           echo "✅ $ACTION completed successfully"
         else
           echo "⚠️  Check status in AWS console"
