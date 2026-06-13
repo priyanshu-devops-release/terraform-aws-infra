@@ -26,7 +26,7 @@ EC2_USER_DATA = "IyEvYmluL2Jhc2gKc2V0IC1lCmV4ZWMgPiAvdmFyL2xvZy91c2VyLWRhdGEubG9
 pb_enable_public_ip = false
 pb_enable_alb_sg = false
 pb_enable_alb = false
-pb_enable_ami_id = "ami-03e73877aee33eaf9" # Amazon Linux 2 AMI (HVM), SSD Volume Type
+pb_enable_ami_id = "ami-03d548a9064c31703" # Amazon Linux 2 AMI (HVM), SSD Volume Type
 instance_type = "t4g.medium"
 
 

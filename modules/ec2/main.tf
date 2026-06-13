@@ -7,7 +7,7 @@ resource "aws_instance" "this" {
   associate_public_ip_address = var.enable_public_ip
   iam_instance_profile = var.iam_instance_profile
   key_name      = null  # Using SSM Session Manager instead of SSH keys
-  user_data     = var.user_data_file
+  user_data     = base64decode(var.user_data_file)
   user_data_replace_on_change = true
   root_block_device {
     volume_size = 20    # ← increase from default 8GB

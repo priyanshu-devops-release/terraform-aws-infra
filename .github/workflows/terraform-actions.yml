@@ -179,7 +179,7 @@ jobs:
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
   terraform:
-    name: Terraform Apply/Destroy
+    name: Terraform Apply
     runs-on: ubuntu-latest
     needs:
     - validate
