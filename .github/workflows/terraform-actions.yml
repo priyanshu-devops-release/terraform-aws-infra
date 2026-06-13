@@ -110,8 +110,8 @@ jobs:
       TARGET: ${{ github.event.inputs.target || '' }}
       AUTO_APPROVE: ${{ github.event.inputs.auto_approve || 'false' }}
       VAR_OVERRIDES: ${{ github.event.inputs.var_overrides || '' }}
-      # S3 key: terraform-plans/<env>/<run_id>/<env>-tfplan
-      S3_PLAN_KEY: terraform-plans/${{ github.event.inputs.environment || 'dev' }}/${{ github.run_id }}/${{ github.event.inputs.environment || 'dev' }}-tfplan
+      # S3 key: terraform-plans/<env>/<run_id>/<env>.tfplan
+      S3_PLAN_KEY: terraform-plans/${{ github.event.inputs.environment || 'dev' }}/${{ github.run_id }}/${{ github.event.inputs.environment || 'dev' }}.tfplan
 
     steps:
     - uses: actions/checkout@v4
@@ -139,7 +139,7 @@ jobs:
         set -e
         terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf
 
-        PLAN_CMD="terraform plan -var-file=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}.tfvars -out=${{ env.ENVIRONMENT }}-tfplan -input=false -no-color"
+        PLAN_CMD="terraform plan -var-file=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}.tfvars -out=${{ env.ENVIRONMENT }}.tfplan -input=false -no-color"
 
         if [ -n "$TARGET" ]; then
           echo "ℹ️  Targeting: $TARGET"
@@ -158,12 +158,12 @@ jobs:
 
     - name: Verify plan file
       run: |
-        test -f ${ENVIRONMENT}-tfplan && echo "Plan exists" || (echo "ERROR: plan file missing"; exit 1)
+        test -f ${ENVIRONMENT}.tfplan && echo "Plan exists" || (echo "ERROR: plan file missing"; exit 1)
 
     - name: Upload tfplan to S3
       if: github.event.inputs.action != 'plan-only'
       run: |
-        aws s3 cp ${ENVIRONMENT}-tfplan s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }} --sse aws:kms --no-progress
+        aws s3 cp ${ENVIRONMENT}.tfplan s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }} --sse aws:kms --no-progress
         echo "✅ Plan uploaded to s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }}"
 
     - name: Slack Notification
@@ -196,7 +196,7 @@ jobs:
       ACTION: ${{ github.event.inputs.action || 'plan-and-apply' }}
       AUTO_APPROVE: ${{ github.event.inputs.auto_approve || 'false' }}
       TARGET: ${{ github.event.inputs.target || '' }}
-      S3_PLAN_KEY: terraform-plans/${{ github.event.inputs.environment || 'dev' }}/${{ github.run_id }}/${{ github.event.inputs.environment || 'dev' }}-tfplan
+      S3_PLAN_KEY: terraform-plans/${{ github.event.inputs.environment || 'dev' }}/${{ github.run_id }}/${{ github.event.inputs.environment || 'dev' }}.tfplan
 
     steps:
     - uses: actions/checkout@v4
@@ -231,13 +231,13 @@ jobs:
     - name: Download tfplan from S3
       if: github.event.inputs.action == 'plan-and-apply'
       run: |
-        aws s3 cp s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }} ${ENVIRONMENT}-tfplan --no-progress
+        aws s3 cp s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }} ${ENVIRONMENT}.tfplan --no-progress
         echo "✅ Plan downloaded from s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }}"
 
     - name: Verify plan exists
       if: github.event.inputs.action == 'plan-and-apply'
       run: |
-        if [ ! -f "${ENVIRONMENT}-tfplan" ]; then
+        if [ ! -f "${ENVIRONMENT}.tfplan" ]; then
           echo "ERROR: Terraform plan not found!"
           exit 1
         fi
@@ -271,7 +271,7 @@ jobs:
           eval "$DESTROY_CMD" > /tmp/action-output.log 2>&1
         else
           echo "✅ Applying Terraform plan..."
-          terraform apply -input=false -no-color ${ENVIRONMENT}-tfplan > /tmp/action-output.log 2>&1
+          terraform apply -input=false -no-color ${ENVIRONMENT}.tfplan > /tmp/action-output.log 2>&1
         fi
 
         if grep -qE "(Apply complete|Destroy complete)" /tmp/action-output.log; then
