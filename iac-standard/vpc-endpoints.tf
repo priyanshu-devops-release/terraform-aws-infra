@@ -3,7 +3,8 @@
 
 module "STANDARD_VPC_ENDPOINTS" {
   source              = "../modules/vpc-endpoints"
-  create_ssm_endpoint = var.enable_ssm_endpoint && var.create_all_ssm_endpoints # Always create S3 endpoint, conditionally create SSM endpoints
+  create_ssm_endpoint = var.enable_ssm_endpoint # Always create S3 endpoint, conditionally create SSM endpoints
+  create_all_ssm_endpoints = var.enable_all_ssm_endpoints
   vpc_id              = module.STANDARD_VPC.vpc_id
   vpc_cidr            = var.vpc_cidr
   private_subnet_ids  = module.STANDARD_VPC.private_subnet_ids
