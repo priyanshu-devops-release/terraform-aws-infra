@@ -13,8 +13,8 @@ module "STANDARD_EC2" {
   iam_instance_profile = module.STANDARD_IAM_ROLE_S3.instance_profile_name
   key_name             = var.key_name
   # public_key_path      = var.public_key_path
-  root_volume_size     = var.root_volume_size
-  depends_on           = [module.STANDARD_PUBLIC_SG, module.STANDARD_IAM_ROLE_S3, module.STANDARD_VPC]
+  root_volume_size = var.root_volume_size
+  depends_on       = [module.STANDARD_PUBLIC_SG, module.STANDARD_IAM_ROLE_S3, module.STANDARD_VPC]
   tags = {
     Environment = var.environment
     Terraform   = "true"
