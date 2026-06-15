@@ -1,6 +1,7 @@
 module "STANDARD_EC2" {
   source               = "../modules/ec2"
   create_ec2           = var.pb_enable_ec2 ? true : false
+  create_key_pair      = var.create_key_pair
   ami_id               = var.pb_enable_ami_id
   instance_name        = "${var.environment}-instance"
   instance_type        = var.instance_type

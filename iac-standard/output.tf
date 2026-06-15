@@ -7,15 +7,15 @@
 # output "DEV_SNS_TOPIC_ARN" {
 #   value = module.DEV_SNS.sns_topic_arn
 # }
-output "DEV_VPC" {
+output "STANDARD_VPC" {
   value = module.STANDARD_VPC.vpc_id
 }
 
-output "DEV_EC2" {
+output "STANDARD_EC2" {
   value = module.STANDARD_EC2.public_ip
 }
 
-output "DEV_ALB_SG" {
+output "STANDARD_ALB_SG" {
   value = module.STANDARD_ALB_SG.security_group_id
 }
 # output "DEV_EKS" {
@@ -24,6 +24,17 @@ output "DEV_ALB_SG" {
 output "STANDARD_PRIVATE_SG" {
   value = module.STANDARD_PRIVATE_SG.security_group_id
 }
-output "DEV_STANDARD_S3_HELM_CHARTS" {
+output "STANDARD_S3_HELM_CHARTS" {
   value = module.STANDARD_S3_HELM_CHARTS.bucket_id
+}
+output "debug_key_name" {
+  value = var.key_name
+}
+
+output "debug_create_key_pair" {
+  value = var.create_key_pair
+}
+
+output "debug_public_key_path" {
+  value = var.public_key_path
 }
