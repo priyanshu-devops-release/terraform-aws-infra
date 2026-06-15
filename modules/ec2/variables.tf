@@ -35,7 +35,7 @@ variable "enable_elastic_ip" {
   default     = false
 }
 
-variable "user_data_file" {
+variable "user_data" {
   type        = string
   description = "Path to user data script file"
   default     = null

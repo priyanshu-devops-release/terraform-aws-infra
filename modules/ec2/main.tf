@@ -7,7 +7,7 @@ resource "aws_instance" "this" {
   associate_public_ip_address = var.enable_public_ip
   iam_instance_profile        = var.iam_instance_profile
   key_name                    = var.key_name
-  user_data                   = file(var.user_data_file)
+  user_data                   = base64decode(var.user_data)
   user_data_replace_on_change = true
   depends_on                  = [ aws_key_pair.dev_key ]
 
