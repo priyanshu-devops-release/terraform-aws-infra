@@ -84,9 +84,29 @@ variable "pb_enable_public_ip" {
   default = false
 }
 
+variable "key_name" {
+  description = "Key pair name for SSH access to EC2"
+  type        = string
+  default     = null
+}
 variable "EC2_USER_DATA" {
   description = "Path to the EC2 user data script"
   type        = string
+}
+
+variable "create_key_pair" {
+  type    = bool
+  default = false
+}
+
+variable "public_key_path" {
+  type    = string
+  default = "~/.ssh/id_ed25519.pub"
+}
+
+variable "root_volume_size" {
+  type    = number
+  default = 30
 }
 
 

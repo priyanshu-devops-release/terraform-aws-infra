@@ -1,11 +1,11 @@
 variable "instance_name" {
-    type = string
+  type = string
 }
 variable "subnet_id" {
-    type = string
+  type = string
 }
 variable "security_group_id" {
-    type = string
+  type = string
 }
 variable "tags" {
   type = map(string)
@@ -15,7 +15,7 @@ variable "instance_type" {
   type        = string
 }
 variable "create_ec2" {
-  type    = bool
+  type = bool
 }
 variable "ami_id" {
   description = "AMI ID for the EC2 instance"
@@ -44,5 +44,26 @@ variable "user_data_file" {
 variable "enable_public_ip" {
   type        = bool
   description = "Enable public IP for EC2 instance"
-  default     = true
+  default     = false
+}
+
+variable "key_name" {
+  description = "Key pair name for SSH access to EC2"
+  type        = string
+  default     = null
+}
+
+variable "create_key_pair" {
+  type    = bool
+  default = false
+}
+
+variable "public_key_path" {
+  type    = string
+  default = "~/.ssh/id_ed25519.pub"
+}
+
+variable "root_volume_size" {
+  type    = number
+  default = 30
 }

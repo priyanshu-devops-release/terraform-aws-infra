@@ -10,7 +10,10 @@ module "STANDARD_EC2" {
   subnet_id            = length(module.STANDARD_VPC.public_subnet_ids) > 0 ? module.STANDARD_VPC.public_subnet_ids[0] : null
   security_group_id    = module.STANDARD_PUBLIC_SG.security_group_id
   iam_instance_profile = module.STANDARD_IAM_ROLE_S3.instance_profile_name
-  depends_on           = [module.STANDARD_PUBLIC_SG, module.STANDARD_IAM_ROLE_S3, module.STANDARD_VPC]
+  key_name             = var.key_name
+  public_key_path      = var.public_key_path
+  root_volume_size     = var.root_volume_size
+  depends_on           = [module.STANDARD_PUBLIC_SG, module.STANDARD_IAM_ROLE_S3, module.STANDARD_VPC, aws_key_pair.dev_key]
   tags = {
     Environment = var.environment
     Terraform   = "true"
