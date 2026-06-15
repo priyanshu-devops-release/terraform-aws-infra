@@ -12,7 +12,7 @@ module "STANDARD_EC2" {
   security_group_id    = module.STANDARD_PUBLIC_SG.security_group_id
   iam_instance_profile = module.STANDARD_IAM_ROLE_S3.instance_profile_name
   key_name             = var.key_name
-  # public_key_path      = var.public_key_path
+  public_key           = var.public_key
   root_volume_size = var.root_volume_size
   depends_on       = [module.STANDARD_PUBLIC_SG, module.STANDARD_IAM_ROLE_S3, module.STANDARD_VPC]
   tags = {
