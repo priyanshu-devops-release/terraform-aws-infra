@@ -6,10 +6,12 @@ resource "aws_instance" "this" {
   vpc_security_group_ids      = compact([var.security_group_id])
   associate_public_ip_address = var.enable_public_ip
   iam_instance_profile        = var.iam_instance_profile
-  key_name                    = var.create_key_pair ? aws_key_pair.dev_key[0].key_name : var.key_name
+  key_name                    = var.create_key_pair ? aws_key_pair.this_key[0].key_name : var.key_name
   user_data                   = base64decode(var.user_data)
   user_data_replace_on_change = true
-  depends_on                  = [ aws_key_pair.dev_key ]
+  depends_on = [
+    aws_key_pair.this_key
+  ]
 
   metadata_options {
     http_endpoint = "enabled"
@@ -64,7 +66,7 @@ resource "aws_eip_association" "this" {
 # SSH Key Pair (Optional)
 ###############################################################################
 
-resource "aws_key_pair" "dev_key" {
+resource "aws_key_pair" "this_key" {
   count = var.create_ec2 && var.create_key_pair ? 1 : 0
 
   key_name   = var.key_name
