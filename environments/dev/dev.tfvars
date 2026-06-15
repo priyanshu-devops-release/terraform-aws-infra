@@ -18,7 +18,7 @@ cluster_name = "pb-dev-eks-cluster"
 pb_enable_dev_eks = false
 
 # EC2 configuration
-pb_enable_ec2 = true
+pb_enable_ec2 = false
 pb_enable_private_sg = false
 pb_enable_public_sg = true
 pb_enable_elastic_ip = false
