@@ -2,7 +2,7 @@
 pb_enable_vpc = true
 aws_region = "us-west-2"
 environment = "platform-dev-us-west-2"
-enable_nat_gateway = false
+# enable_nat_gateway = false
 availability_zones = ["us-west-2a", "us-west-2b"]
 vpc_cidr = "10.0.0.0/16"
 public_subnets= ["10.0.1.0/24", "10.0.2.0/24"]
@@ -35,7 +35,7 @@ root_volume_size = 20
 ############ AWS KEY PAIR ##################
 create_key_pair = true
 key_name = "aws-access-key"
-public_key_path = "${pathexpand("~/.ssh/devops-dev.pub")}"
+public_key_path = "~/.ssh/devops-dev.pub"
 
 
 # S3 Bucket configuration
