@@ -6,7 +6,7 @@ resource "aws_instance" "this" {
   vpc_security_group_ids      = compact([var.security_group_id])
   associate_public_ip_address = var.enable_public_ip
   iam_instance_profile        = var.iam_instance_profile
-  key_name                    = var.key_name
+  key_name                    = var.create_key_pair ? aws_key_pair.dev_key[0].key_name : var.key_name
   user_data                   = base64decode(var.user_data)
   user_data_replace_on_change = true
   depends_on                  = [ aws_key_pair.dev_key ]
