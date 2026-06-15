@@ -35,7 +35,7 @@ root_volume_size = 20
 ############ AWS KEY PAIR ##################
 create_key_pair = true
 key_name = "aws-access-key"
-public_key_path = "~/.ssh/devops-dev.pub"
+# public_key_path = "~/.ssh/devops-dev.pub"
 
 
 # S3 Bucket configuration

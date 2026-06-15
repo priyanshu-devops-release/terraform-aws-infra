@@ -196,6 +196,7 @@ jobs:
       ACTION: ${{ github.event.inputs.action || 'plan-and-apply' }}
       AUTO_APPROVE: ${{ github.event.inputs.auto_approve || 'false' }}
       TARGET: ${{ github.event.inputs.target || '' }}
+      TF_VAR_public_key: ${{ secrets.EC2_PUBLIC_KEY }}
       S3_PLAN_KEY: terraform-plans/${{ github.event.inputs.environment || 'dev' }}/${{ github.run_id }}/${{ github.event.inputs.environment || 'dev' }}.tfplan
 
     steps:

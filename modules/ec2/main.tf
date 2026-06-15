@@ -70,7 +70,7 @@ resource "aws_key_pair" "this_key" {
   count = var.create_ec2 && var.create_key_pair ? 1 : 0
 
   key_name   = var.key_name
-  public_key = file(pathexpand(var.public_key_path))
+  public_key = var.public_key
 
   tags = merge(
     {
