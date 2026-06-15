@@ -33,8 +33,9 @@ EC2_USER_DATA = "IyEvYmluL2Jhc2gKIyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0
 root_volume_size = 20
 
 ############ AWS KEY PAIR ##################
+create_key_pair = true
 key_name = "aws-access-key"
-public_key_path = "${pathexpand("~/.ssh/id_ed25519.pub")}"
+public_key_path = "${pathexpand("~/.ssh/devops-dev.pub")}"
 
 
 # S3 Bucket configuration

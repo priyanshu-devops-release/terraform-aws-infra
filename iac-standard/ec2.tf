@@ -13,7 +13,7 @@ module "STANDARD_EC2" {
   key_name             = var.key_name
   public_key_path      = var.public_key_path
   root_volume_size     = var.root_volume_size
-  depends_on           = [module.STANDARD_PUBLIC_SG, module.STANDARD_IAM_ROLE_S3, module.STANDARD_VPC, aws_key_pair.dev_key]
+  depends_on           = [module.STANDARD_PUBLIC_SG, module.STANDARD_IAM_ROLE_S3, module.STANDARD_VPC]
   tags = {
     Environment = var.environment
     Terraform   = "true"
