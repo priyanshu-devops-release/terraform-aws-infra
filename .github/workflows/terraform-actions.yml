@@ -110,6 +110,7 @@ jobs:
       TARGET: ${{ github.event.inputs.target || '' }}
       AUTO_APPROVE: ${{ github.event.inputs.auto_approve || 'false' }}
       VAR_OVERRIDES: ${{ github.event.inputs.var_overrides || '' }}
+      TF_VAR_public_key: ${{ secrets.EC2_PUBLIC_KEY }}
       # S3 key: terraform-plans/<env>/<run_id>/<env>.tfplan
       S3_PLAN_KEY: terraform-plans/${{ github.event.inputs.environment || 'dev' }}/${{ github.run_id }}/${{ github.event.inputs.environment || 'dev' }}.tfplan
 
