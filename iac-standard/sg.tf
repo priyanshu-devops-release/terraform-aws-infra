@@ -20,13 +20,6 @@ module "STANDARD_PUBLIC_SG" {
       cidr_blocks = ["0.0.0.0/0"]
     },
     {
-      name        = "Custom"
-      from_port   = 30007
-      to_port     = 30007
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    },
-    {
       name        = "K3s API"
       from_port   = 6443
       to_port     = 6443
@@ -40,6 +33,20 @@ module "STANDARD_PUBLIC_SG" {
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
     },
+    {
+      name        = "ALB"
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      name        = "ALB"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   ]
 
   tags = {
