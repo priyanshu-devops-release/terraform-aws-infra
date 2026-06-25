@@ -34,3 +34,7 @@ output "debug_key_name" {
 output "debug_create_key_pair" {
   value = var.create_key_pair
 }
+
+output "STANDARD_CLOUDFRONT_DOMAIN" {
+  value = module.STANDARD_CLOUDFRONT.distribution_domain_name
+}

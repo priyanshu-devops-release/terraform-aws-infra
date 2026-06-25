@@ -173,3 +173,10 @@ variable "create_s3_endpoint" {
   type        = bool
   default     = true
 }
+
+# CloudFront variables
+variable "enable_cloudfront" {
+  description = "Whether to create the CloudFront distribution"
+  type        = bool
+  default     = false
+}
