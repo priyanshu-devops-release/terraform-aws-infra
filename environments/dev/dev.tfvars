@@ -47,4 +47,4 @@ versioning_enabled = false
 create_encryption  = true
 
 # CloudFront configuration
-enable_cloudfront = true
+enable_cloudfront = false
