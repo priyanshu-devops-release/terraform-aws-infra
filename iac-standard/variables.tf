@@ -135,6 +135,11 @@ variable "create_encryption" {
   default     = false
 }
 
+variable "enable_public_access_block" {
+  description = "Whether to create public access block configuration"
+  type        = bool
+  default     = false
+}
 variable "create_acl" {
   description = "Whether to create ACL configuration"
   type        = bool

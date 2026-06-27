@@ -45,6 +45,7 @@ acl                = "private"
 create_versioning  = false
 versioning_enabled = false
 create_encryption  = true
+enable_public_access_block = true
 
 # CloudFront configuration
 enable_cloudfront = false
