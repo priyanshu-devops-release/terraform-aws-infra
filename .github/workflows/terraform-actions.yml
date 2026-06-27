@@ -3,7 +3,6 @@ name: Terraform IAC App Stack
 permissions:
   id-token: write
   contents: read
-  issues: write
 
 on:
   push:
@@ -22,29 +21,22 @@ on:
           - prod
         default: dev
       action:
-        description: 'Choose action: plan, apply, destroy, or plan-only'
+        description: 'Choose action: plan or apply'
         required: true
         type: choice
         options:
-          - plan-only
-          - plan-and-apply
-          - destroy
-        default: plan-only
-      target:
-        description: 'Target specific resource (optional). Leave empty for all. Example: module.STANDARD_EC2 or aws_instance.this'
+          - plan
+          - apply
+        default: plan
+      plan_run_id:
+        description: 'Run ID of the approved plan to apply (required when action is apply)'
         required: false
         type: string
         default: ''
-      auto_approve:
-        description: 'Auto-approve apply without manual confirmation (high risk!)'
-        required: false
-        type: boolean
-        default: false
-      var_overrides:
-        description: 'Variable overrides (optional, JSON format). Example: {"instance_type":"t3.large","pb_enable_dev_public_ip":true}'
-        required: false
-        type: string
-        default: ''
+
+concurrency:
+  group: terraform-${{ github.event.inputs.environment || 'dev' }}
+  cancel-in-progress: false
 
 jobs:
   validate:
@@ -88,7 +80,7 @@ jobs:
       with:
         payload: |
           {
-            "text": "${{ job.status == 'success' && ':white_check_mark:' || ':x:' }} Terraform `validate` - ${{ job.status }}"
+            "text": "${{ job.status == 'success' && ':white_check_mark:' || ':x:' }} Terraform validate - ${{ job.status }}"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -106,13 +98,10 @@ jobs:
 
     env:
       ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
-      ACTION: ${{ github.event.inputs.action || 'plan-only' }}
-      TARGET: ${{ github.event.inputs.target || '' }}
-      AUTO_APPROVE: ${{ github.event.inputs.auto_approve || 'false' }}
-      VAR_OVERRIDES: ${{ github.event.inputs.var_overrides || '' }}
+      ACTION: ${{ github.event.inputs.action || 'plan' }}
       TF_VAR_public_key: ${{ secrets.EC2_PUBLIC_KEY }}
-      # S3 key: terraform-plans/<env>/<run_id>/<env>.tfplan
-      S3_PLAN_KEY: terraform-plans/${{ github.event.inputs.environment || 'dev' }}/${{ github.run_id }}/${{ github.event.inputs.environment || 'dev' }}.tfplan
+      PLAN_FILE: ${{ github.event.inputs.environment || 'dev' }}.tfplan
+      S3_PLAN_KEY: terraform-plans/${{ github.event.inputs.environment || 'dev' }}/${{ github.run_id }}/terraform.tfplan
 
     steps:
     - uses: actions/checkout@v4
@@ -139,32 +128,16 @@ jobs:
       run: |
         set -e
         terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf
-
-        PLAN_CMD="terraform plan -var-file=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}.tfvars -out=${{ env.ENVIRONMENT }}.tfplan -input=false"
-
-        if [ -n "$TARGET" ]; then
-          echo "ℹ️  Targeting: $TARGET"
-          PLAN_CMD="$PLAN_CMD -target=$TARGET"
-        fi
-
-        if [ -n "$VAR_OVERRIDES" ]; then
-          echo "ℹ️  Applying variable overrides..."
-          mapfile -t VAR_FLAGS < <(echo "$VAR_OVERRIDES" | jq -r 'to_entries[] | "-var=\(.key)=\(.value | @json)"')
-          for VAR in "${VAR_FLAGS[@]}"; do
-            PLAN_CMD="$PLAN_CMD $VAR"
-          done
-        fi
-
-        eval "$PLAN_CMD"
+        terraform plan -var-file=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}.tfvars -out=${PLAN_FILE} -input=false
 
     - name: Verify plan file
       run: |
-        test -f ${ENVIRONMENT}.tfplan && echo "Plan exists" || (echo "ERROR: plan file missing"; exit 1)
+        test -f "${PLAN_FILE}" && echo "Plan exists" || (echo "ERROR: plan file missing"; exit 1)
 
     - name: Upload tfplan to S3
-      if: github.event.inputs.action != 'plan-only'
+      if: github.event_name == 'workflow_dispatch'
       run: |
-        aws s3 cp ${ENVIRONMENT}.tfplan s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }} --sse aws:kms --no-progress
+        aws s3 cp "${PLAN_FILE}" s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }} --sse aws:kms --no-progress
         echo "✅ Plan uploaded to s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }}"
 
     - name: Slack Notification
@@ -173,7 +146,7 @@ jobs:
       with:
         payload: |
           {
-            "text": "${{ job.status == 'success' && '✅' || '❌' }} Terraform `plan` ${{ job.status }} on `${{ github.ref_name }}`"
+            "text": "${{ job.status == 'success' && '✅' || '❌' }} Terraform plan ${{ job.status }} on `${{ github.ref_name }}`"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -185,7 +158,7 @@ jobs:
     needs:
     - validate
     - plan
-    if: github.event_name == 'workflow_dispatch' && (github.event.inputs.action == 'plan-and-apply' || github.event.inputs.action == 'destroy')
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply'
     environment: terraform-apply-${{ github.event.inputs.environment || 'dev' }}
 
     defaults:
@@ -194,31 +167,14 @@ jobs:
 
     env:
       ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
-      ACTION: ${{ github.event.inputs.action || 'plan-and-apply' }}
-      AUTO_APPROVE: ${{ github.event.inputs.auto_approve || 'false' }}
-      TARGET: ${{ github.event.inputs.target || '' }}
+      ACTION: ${{ github.event.inputs.action || 'apply' }}
       TF_VAR_public_key: ${{ secrets.EC2_PUBLIC_KEY }}
-      S3_PLAN_KEY: terraform-plans/${{ github.event.inputs.environment || 'dev' }}/${{ github.run_id }}/${{ github.event.inputs.environment || 'dev' }}.tfplan
+      PLAN_FILE: ${{ github.event.inputs.environment || 'dev' }}.tfplan
+      PLAN_RUN_ID: ${{ github.event.inputs.plan_run_id || '' }}
+      S3_PLAN_KEY: terraform-plans/${{ github.event.inputs.environment || 'dev' }}/${{ github.event.inputs.plan_run_id }}/terraform.tfplan
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: ⏸️  Approval Required
-      if: github.event.inputs.auto_approve == 'false'
-      uses: trstringer/manual-approval@v1
-      with:
-        secret: ${{ github.TOKEN }}
-        approvers: ${{ secrets.TERRAFORM_APPROVERS }}
-        minimum-approvals: 1
-        issue-title: "⏳ Approval needed for Terraform ${{ github.event.inputs.action }} on ${{ github.event.inputs.environment }}"
-        issue-body: |
-          **Environment:** ${{ github.event.inputs.environment }}
-          **Action:** ${{ github.event.inputs.action }}
-          **Target:** ${{ github.event.inputs.target || 'All resources' }}
-          **Requested by:** ${{ github.actor }}
-          **Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-          ⚠️ **REVIEW THE PLAN ABOVE BEFORE APPROVING**
 
     - uses: hashicorp/setup-terraform@v3
       with:
@@ -231,57 +187,27 @@ jobs:
         aws-region: ${{ vars.AWS_REGION }}
 
     - name: Download tfplan from S3
-      if: github.event.inputs.action == 'plan-and-apply'
       run: |
-        aws s3 cp s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }} ${ENVIRONMENT}.tfplan --no-progress
+        if [ -z "${PLAN_RUN_ID}" ]; then
+          echo "ERROR: plan_run_id is required when applying"
+          exit 1
+        fi
+        aws s3 cp s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }} "${PLAN_FILE}" --no-progress
         echo "✅ Plan downloaded from s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }}"
 
     - name: Verify plan exists
-      if: github.event.inputs.action == 'plan-and-apply'
       run: |
-        if [ ! -f "${ENVIRONMENT}.tfplan" ]; then
+        if [ ! -f "${PLAN_FILE}" ]; then
           echo "ERROR: Terraform plan not found!"
           exit 1
         fi
 
-    - name: Terraform Init & Execute
+    - name: Terraform Init & Apply
       run: |
         set -e
         terraform init -upgrade -backend-config=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}-remotestate.conf
-
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "🚀 Executing: $ACTION"
-        echo "Environment: $ENVIRONMENT"
-        if [ -n "$TARGET" ]; then
-          echo "Target: $TARGET"
-        fi
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-        if [ "$ACTION" == "destroy" ]; then
-          echo "⚠️  WARNING: This will destroy infrastructure!"
-          DESTROY_CMD="terraform destroy -var-file=../environments/${{ env.ENVIRONMENT }}/${{ env.ENVIRONMENT }}.tfvars -input=false"
-
-          if [ -n "$TARGET" ]; then
-            DESTROY_CMD="$DESTROY_CMD -target=$TARGET"
-          fi
-
-          if [ "$AUTO_APPROVE" == "true" ]; then
-            echo "Auto-approving destroy"
-            DESTROY_CMD="$DESTROY_CMD -auto-approve"
-          fi
-
-          eval "$DESTROY_CMD" > /tmp/action-output.log 2>&1
-        else
-          echo "✅ Applying Terraform plan..."
-          terraform apply -input=false ${ENVIRONMENT}.tfplan
-        fi
-
-        if grep -qE "(Apply complete|Destroy complete)"; then
-          echo "✅ $ACTION completed successfully"
-        else
-          echo "⚠️  Check status in AWS console"
-        fi
-        rm -f /tmp/action-output.log
+        echo "Applying stored Terraform plan for $ENVIRONMENT"
+        terraform apply -input=false "${PLAN_FILE}"
 
     - name: Slack Notification
       if: always()
@@ -289,7 +215,7 @@ jobs:
       with:
         payload: |
           {
-            "text": "${{ job.status == 'success' && '✅' || '❌' }} Terraform `${{ github.job }}` - ${{ job.status }}\n*Job:* `${{ github.job }}`\n*Branch:* `${{ github.ref_name }}`\n*Actor:* `${{ github.actor }}`\n*Repo:* `${{ github.repository }}`\n*Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}>\n*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|`${{ github.sha }}`>"
+            "text": "${{ job.status == 'success' && '✅' || '❌' }} Terraform apply ${{ job.status }} on `${{ github.ref_name }}`"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
