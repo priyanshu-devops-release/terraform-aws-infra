@@ -36,7 +36,6 @@ variable "secret_parameters" {
   description = "SecureString SSM parameters keyed by relative path (example: jenkins/github/client-id)"
   type        = map(string)
   default     = {}
-  sensitive   = true
 }
 variable "create_secret_parameters" {
   description = "Whether to create the secret parameters in SSM"
