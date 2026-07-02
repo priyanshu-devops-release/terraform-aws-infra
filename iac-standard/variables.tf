@@ -185,3 +185,34 @@ variable "enable_cloudfront" {
   type        = bool
   default     = false
 }
+
+# ESO / SSM variables
+variable "enable_eso" {
+  description = "Whether to create ESO IAM policy and SSM parameters"
+  type        = bool
+  default     = false
+}
+
+variable "enable_iam_policy" {
+  description = "Whether to create IAM policy for ESO SSM read access"
+  type        = bool
+  default     = false
+}
+variable "eso_parameter_path_prefix" {
+  description = "SSM path prefix for External Secrets Operator parameters"
+  type        = string
+  default     = "/platform"
+}
+
+variable "eso_kms_key_arn" {
+  description = "Optional customer-managed KMS key ARN for SecureString SSM parameters"
+  type        = string
+  default     = null
+}
+
+variable "eso_secret_parameters" {
+  description = "SecureString SSM parameters keyed by relative path (example: jenkins/github/client-id)"
+  type        = map(string)
+  default     = {}
+  sensitive   = true
+}

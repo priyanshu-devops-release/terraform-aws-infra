@@ -38,3 +38,15 @@ output "debug_create_key_pair" {
 output "STANDARD_CLOUDFRONT_DOMAIN" {
   value = module.STANDARD_CLOUDFRONT.distribution_domain_name
 }
+
+output "ESO_IAM_ROLE_ARN" {
+  value = var.enable_iam_policy ? module.STANDARD_IAM_ROLE_S3.role_arn : null
+}
+
+output "ESO_SSM_PARAMETER_NAMES" {
+  value = var.enable_eso ? module.STANDARD_ESO.parameter_names : {}
+}
+
+output "ESO_PARAMETER_PATH_PREFIX" {
+  value = var.enable_eso ? module.STANDARD_ESO.parameter_path_prefix : null
+}

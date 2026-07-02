@@ -49,3 +49,12 @@ enable_public_access_block = false
 
 # CloudFront configuration
 enable_cloudfront = false
+
+# ESO configuration
+enable_eso = true
+enable_iam_policy = true
+eso_secret_parameters= {
+  "jenkins/github/client-id"     = "your-client-id"
+  "jenkins/github/client-secret" = "your-client-secret"
+  "grafana/admin/password"       = "your-grafana-password"
+}
