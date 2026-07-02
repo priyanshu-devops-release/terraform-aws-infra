@@ -214,5 +214,4 @@ variable "eso_secret_parameters" {
   description = "SecureString SSM parameters keyed by relative path (example: jenkins/github/client-id)"
   type        = map(string)
   default     = {}
-  sensitive   = true
 }
