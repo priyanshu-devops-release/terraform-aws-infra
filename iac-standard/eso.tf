@@ -6,6 +6,14 @@ module "STANDARD_ESO" {
   aws_region               = var.aws_region
   parameter_path_prefix    = var.eso_parameter_path_prefix
   kms_key_arn              = var.eso_kms_key_arn
-  secret_parameters        = var.eso_secret_parameters
+  secret_parameters        = {
+  "jenkins/github/client-id"     = var.jenkins_github_client_id
+  "jenkins/github/client-secret" = var.jenkins_github_client_secret
+  "grafana/admin/password"       = var.grafana_admin_password
+}
   environment              = var.environment
+  tags = {
+    Environment = var.environment
+    Terraform   = "true"
+  }
 }

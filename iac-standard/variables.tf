@@ -215,3 +215,19 @@ variable "eso_secret_parameters" {
   type        = map(string)
   default     = {}
 }
+
+variable "jenkins_github_client_id" {
+  description = "GitHub client ID for Jenkins"
+  type        = string
+  default     = ""
+}
+variable "jenkins_github_client_secret" {
+  description = "GitHub client secret for Jenkins"
+  type        = string
+  default     = ""
+}
+variable "grafana_admin_password" {
+  description = "Admin password for Grafana"
+  type        = string
+  default     = ""
+}

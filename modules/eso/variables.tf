@@ -43,3 +43,7 @@ variable "create_secret_parameters" {
   type        = bool
   default     = false
 }
+variable "tags" {
+  type    = map(string)
+  default = {}
+}
