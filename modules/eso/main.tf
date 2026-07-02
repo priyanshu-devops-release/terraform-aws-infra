@@ -56,7 +56,6 @@ resource "aws_iam_role_policy_attachment" "this" {
 
 resource "aws_ssm_parameter" "secret_parameters" {
   count = var.create_secret_parameters && var.secret_parameters != null ? length(var.secret_parameters) : 0
-  for_each = var.secret_parameters
   name        = "${local.parameter_prefix}/${trim(each.key, "/")}"
   description = "Secret parameter for ESO: ${each.key}"
   type        = "SecureString"
