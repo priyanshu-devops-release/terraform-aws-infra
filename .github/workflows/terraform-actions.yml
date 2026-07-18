@@ -135,7 +135,7 @@ jobs:
         test -f "${PLAN_FILE}" && echo "Plan exists" || (echo "ERROR: plan file missing"; exit 1)
 
     - name: Upload tfplan to S3
-      if: github.event_name == 'workflow_dispatch'
+      if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'plan'
       run: |
         aws s3 cp "${PLAN_FILE}" s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }} --sse aws:kms --no-progress
         echo "✅ Plan uploaded to s3://${{ secrets.TF_PLANS_BUCKET }}/${{ env.S3_PLAN_KEY }}"
