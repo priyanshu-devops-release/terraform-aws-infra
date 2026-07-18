@@ -64,6 +64,12 @@ resource "aws_ssm_parameter" "secret_parameters" {
   key_id      = var.kms_key_arn
   overwrite   = true
 
+  lifecycle {
+    ignore_changes = [
+      value
+    ]
+  }
+
   tags  = merge(var.tags, {
     Environment = var.environment
     Terraform   = "true"
