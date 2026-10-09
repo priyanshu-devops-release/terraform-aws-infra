@@ -174,6 +174,12 @@ variable "iam_console_password_length" {
   default     = 16
 }
 
+variable "iam_attach_read_only_policy" {
+  description = "Attach AWS ReadOnlyAccess to every IAM user"
+  type        = bool
+  default     = false
+}
+
 # SSM Session Manager variable
 variable "enable_ssm_endpoint" {
   description = "Whether to create SSM VPC endpoints..."

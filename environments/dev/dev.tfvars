@@ -9,7 +9,8 @@ public_subnets     = ["10.0.1.0/24", "10.0.2.0/24"]
 private_subnets    = ["10.0.101.0/24", "10.0.102.0/24"]
 
 # IAM Role configuration
-create_role = true
+create_role                 = true
+iam_attach_read_only_policy = true
 
 
 # EKS Cluster configuration
@@ -39,23 +40,23 @@ key_name        = "aws-access-key"
 
 
 # S3 Bucket configuration
-create_bucket      = true
-create_acl         = false
-acl                = "private"
-create_versioning  = false
-versioning_enabled = false
-create_encryption  = true
+create_bucket              = true
+create_acl                 = false
+acl                        = "private"
+create_versioning          = false
+versioning_enabled         = false
+create_encryption          = true
 enable_public_access_block = false
 
 # CloudFront configuration
 enable_cloudfront = false
 
 # ESO configuration
-enable_eso = true
-enable_iam_policy = true
-jenkins_github_client_id = "demo-jenkins-github-client-id"
+enable_eso                   = true
+enable_iam_policy            = true
+jenkins_github_client_id     = "demo-jenkins-github-client-id"
 jenkins_github_client_secret = "demo-jenkins-github-client-secret"
-grafana_admin_password = "demo-grafana-admin-password"
+grafana_admin_password       = "demo-grafana-admin-password"
 
 
 # IAM Users configuration
