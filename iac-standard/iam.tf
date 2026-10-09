@@ -27,3 +27,14 @@ module "STANDARD_IAM_ROLE_S3" {
     terraform   = "true"
   }
 }
+
+module "STANDARD_IAM_USERS" {
+  source = "../modules/iam-users"
+
+  users                   = var.iam_users
+  console_password_length = var.iam_console_password_length
+  tags = {
+    Environment = var.environment
+    terraform   = "true"
+  }
+}

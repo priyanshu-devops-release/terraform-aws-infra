@@ -159,6 +159,21 @@ variable "create_role" {
   default     = false
 }
 
+variable "iam_users" {
+  description = "IAM users and groups to create"
+  type = map(object({
+    full_name = string
+    email     = string
+  }))
+  default = {}
+}
+
+variable "iam_console_password_length" {
+  description = "Length of generated IAM console passwords"
+  type        = number
+  default     = 16
+}
+
 # SSM Session Manager variable
 variable "enable_ssm_endpoint" {
   description = "Whether to create SSM VPC endpoints..."

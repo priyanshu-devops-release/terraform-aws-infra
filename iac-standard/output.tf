@@ -50,3 +50,9 @@ output "ESO_SSM_PARAMETER_NAMES" {
 output "ESO_PARAMETER_PATH_PREFIX" {
   value = var.enable_eso ? module.STANDARD_ESO.parameter_path_prefix : null
 }
+
+output "STANDARD_IAM_GROUPS_USERS" {
+  description = "Created IAM users and console credentials"
+  value       = module.STANDARD_IAM_USERS.users
+  sensitive   = true
+}

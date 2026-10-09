@@ -56,3 +56,13 @@ enable_iam_policy = true
 jenkins_github_client_id = "demo-jenkins-github-client-id"
 jenkins_github_client_secret = "demo-jenkins-github-client-secret"
 grafana_admin_password = "demo-grafana-admin-password"
+
+
+# IAM Users configuration
+iam_users = {
+  "priyanshu.devops" = {
+    full_name = "Priyanshu"
+    email     = "priyanshu@company.com"
+    groups    = ["devops"]
+  }
+}
