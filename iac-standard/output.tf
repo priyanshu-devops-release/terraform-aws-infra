@@ -53,6 +53,6 @@ output "ESO_PARAMETER_PATH_PREFIX" {
 
 output "STANDARD_IAM_GROUPS_USERS" {
   description = "Created IAM users and console credentials"
-  value       = module.STANDARD_IAM_USERS.users
+  value       = module.STANDARD_IAM_GROUPS_USERS.users
   sensitive   = true
 }
