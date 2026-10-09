@@ -38,3 +38,12 @@ module "STANDARD_IAM_USERS" {
     terraform   = "true"
   }
 }
+
+module "STANDARD_IAM_POLICY" {
+  source = "../modules/iam-policy"
+
+  user_names              = toset(keys(var.iam_users))
+  attach_read_only_policy = var.iam_attach_read_only_policy
+
+  depends_on = [module.STANDARD_IAM_USERS]
+}
