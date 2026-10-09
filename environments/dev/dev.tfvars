@@ -60,10 +60,32 @@ grafana_admin_password       = "demo-grafana-admin-password"
 
 
 # IAM Users configuration
+iam_read_only_group_name = "devops"
+
 iam_users = {
   "priyanshu.devops" = {
     full_name = "Priyanshu"
     email     = "priyanshu@company.com"
+    groups    = ["devops"]
+  }
+  "john.developer" = {
+    full_name = "John Smith"
+    email     = "john@company.com"
+    groups    = ["devops"]
+  }
+  "sarah.engineer" = {
+    full_name = "Sarah Johnson"
+    email     = "sarah@company.com"
+    groups    = ["devops"]
+  }
+  "mike.devops" = {
+    full_name = "Mike Davis"
+    email     = "mike@company.com"
+    groups    = ["devops"]
+  }
+  "alice.analyst" = {
+    full_name = "Alice Smith"
+    email     = "alice@company.com"
     groups    = ["devops"]
   }
 }

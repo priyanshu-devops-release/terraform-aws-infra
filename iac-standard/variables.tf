@@ -164,6 +164,7 @@ variable "iam_users" {
   type = map(object({
     full_name = string
     email     = string
+    groups    = list(string)
   }))
   default = {}
 }
@@ -178,6 +179,12 @@ variable "iam_attach_read_only_policy" {
   description = "Attach AWS ReadOnlyAccess to every IAM user"
   type        = bool
   default     = false
+}
+
+variable "iam_read_only_group_name" {
+  description = "IAM group that receives AWS ReadOnlyAccess"
+  type        = string
+  default     = null
 }
 
 # SSM Session Manager variable

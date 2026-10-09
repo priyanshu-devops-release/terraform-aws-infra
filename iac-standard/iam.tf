@@ -28,8 +28,8 @@ module "STANDARD_IAM_ROLE_S3" {
   }
 }
 
-module "STANDARD_IAM_USERS" {
-  source = "../modules/iam-users"
+module "STANDARD_IAM_GROUPS_USERS" {
+  source = "../modules/iam-groups"
 
   users                   = var.iam_users
   console_password_length = var.iam_console_password_length
@@ -42,8 +42,8 @@ module "STANDARD_IAM_USERS" {
 module "STANDARD_IAM_POLICY" {
   source = "../modules/iam-policy"
 
-  user_names              = toset(keys(var.iam_users))
   attach_read_only_policy = var.iam_attach_read_only_policy
+  group_name              = var.iam_read_only_group_name
 
-  depends_on = [module.STANDARD_IAM_USERS]
+  depends_on = [module.STANDARD_IAM_GROUPS_USERS]
 }

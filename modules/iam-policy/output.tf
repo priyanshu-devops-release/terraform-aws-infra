@@ -3,7 +3,7 @@ output "attached_policy_arn" {
   value       = var.attach_read_only_policy ? data.aws_iam_policy.read_only.arn : null
 }
 
-output "user_names" {
-  description = "IAM users receiving the read-only policy"
-  value       = var.attach_read_only_policy ? var.user_names : []
+output "group_name" {
+  description = "IAM group receiving the read-only policy"
+  value       = var.attach_read_only_policy ? var.group_name : null
 }
