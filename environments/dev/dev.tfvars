@@ -63,7 +63,7 @@ grafana_admin_password       = "demo-grafana-admin-password"
 iam_read_only_group_name = "devops"
 
 iam_users = {
-  "priyanshu.devops" = {
+  "priyanshub.devops" = {
     full_name = "Priyanshu"
     email     = "priyanshu@company.com"
     groups    = ["devops"]
