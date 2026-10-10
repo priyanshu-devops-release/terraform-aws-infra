@@ -93,21 +93,23 @@ iam_users = {
 # Custom IAM Policies configuration
 iam_custom_policies = {
   devops = {
-    policy_json = jsonencode({
-      Version = "2012-10-17"
-      Statement = [
-        {
-          Effect = "Allow"
-          Action = [
-            "ec2:Describe*",
-            "ec2:Get*",
-            "logs:Describe*",
-            "logs:Get*"
-          ]
-          Resource = "*"
-        }
-      ]
-    })
+    policy_json = <<-POLICY
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:Describe*",
+              "ec2:Get*",
+              "logs:Describe*",
+              "logs:Get*"
+            ],
+            "Resource": "*"
+          }
+        ]
+      }
+    POLICY
 
     policy_arns = [
       "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
