@@ -11,7 +11,7 @@ variable "read_only_policy_arn" {
 }
 
 variable "group_name" {
-  description = "IAM group that receives the read-only policy"
-  type        = string
-  default     = null
+  description = "IAM groups that receive the read-only policy"
+  type        = set(string)
+  default     = []
 }

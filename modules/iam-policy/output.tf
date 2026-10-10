@@ -4,6 +4,6 @@ output "attached_policy_arn" {
 }
 
 output "group_name" {
-  description = "IAM group receiving the read-only policy"
-  value       = var.attach_read_only_policy ? var.group_name : null
+  description = "IAM groups receiving the read-only policy"
+  value       = var.attach_read_only_policy ? var.group_name : []
 }
