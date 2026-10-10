@@ -15,3 +15,12 @@ variable "group_name" {
   type        = set(string)
   default     = []
 }
+
+variable "custom_policies" {
+  description = "Custom policy JSON and existing policy ARNs keyed by IAM group name"
+  type = map(object({
+    policy_json = optional(string)
+    policy_arns = optional(set(string), [])
+  }))
+  default = {}
+}

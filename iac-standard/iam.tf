@@ -44,6 +44,7 @@ module "STANDARD_IAM_POLICY" {
 
   attach_read_only_policy = var.iam_attach_read_only_policy
   group_name              = var.iam_read_only_group_name
+  custom_policies         = var.iam_custom_policies
 
   depends_on = [module.STANDARD_IAM_GROUPS_USERS]
 }
