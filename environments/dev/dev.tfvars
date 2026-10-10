@@ -10,8 +10,8 @@ private_subnets    = ["10.0.101.0/24", "10.0.102.0/24"]
 
 # IAM Role configuration
 create_role                    = true
-enable_iam_users_groups_policy = true
-iam_attach_read_only_policy    = true
+enable_iam_users_groups_policy = false
+iam_attach_read_only_policy    = false
 
 
 # EKS Cluster configuration
