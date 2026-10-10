@@ -53,6 +53,11 @@ output "ESO_PARAMETER_PATH_PREFIX" {
 
 output "STANDARD_IAM_GROUPS_USERS" {
   description = "Created IAM users and console credentials"
-  value       = module.STANDARD_IAM_GROUPS_USERS.users
+  value       = var.enable_iam_users_groups_policy ? module.STANDARD_IAM_GROUPS_USERS[0].users : {}
   sensitive   = true
+}
+
+output "STANDARD_IAM_GROUPS" {
+  description = "Created IAM groups"
+  value       = var.enable_iam_users_groups_policy ? module.STANDARD_IAM_GROUPS_USERS[0].groups : {}
 }

@@ -159,6 +159,12 @@ variable "create_role" {
   default     = false
 }
 
+variable "enable_iam_users_groups_policy" {
+  description = "Whether to create IAM users, groups, and group policies"
+  type        = bool
+  default     = true
+}
+
 variable "iam_users" {
   description = "IAM users and groups to create"
   type = map(object({

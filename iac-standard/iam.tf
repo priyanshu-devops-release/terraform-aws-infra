@@ -30,6 +30,7 @@ module "STANDARD_IAM_ROLE_S3" {
 
 module "STANDARD_IAM_GROUPS_USERS" {
   source = "../modules/iam-groups"
+  count  = var.enable_iam_users_groups_policy ? 1 : 0
 
   users                   = var.iam_users
   console_password_length = var.iam_console_password_length
@@ -41,6 +42,7 @@ module "STANDARD_IAM_GROUPS_USERS" {
 
 module "STANDARD_IAM_POLICY" {
   source = "../modules/iam-policy"
+  count  = var.enable_iam_users_groups_policy ? 1 : 0
 
   attach_read_only_policy = var.iam_attach_read_only_policy
   group_name              = var.iam_read_only_group_name
