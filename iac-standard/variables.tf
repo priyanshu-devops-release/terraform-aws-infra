@@ -182,9 +182,9 @@ variable "iam_attach_read_only_policy" {
 }
 
 variable "iam_read_only_group_name" {
-  description = "IAM group that receives AWS ReadOnlyAccess"
-  type        = string
-  default     = null
+  description = "IAM groups that receive AWS ReadOnlyAccess"
+  type        = set(string)
+  default     = []
 }
 
 # SSM Session Manager variable
