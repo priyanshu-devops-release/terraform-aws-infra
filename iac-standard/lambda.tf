@@ -15,18 +15,7 @@ locals {
   lambda_dynamodb_grant = var.enable_lambda_dynamodb_lab && var.lambda_dynamodb_access_mode != "none"
 }
 
-module "STANDARD_DYNAMODB_ITEMS" {
-  source       = "../modules/dynamodb"
-  create_table = var.enable_lambda_dynamodb_lab
-  table_name   = "${var.environment}-items"
-  hash_key     = "id"
-
-  tags = {
-    Environment = var.environment
-    Terraform   = "true"
-    name        = "${var.environment}-items"
-  }
-}
+# DynamoDB table is defined in dynamo.tf (module.STANDARD_DYNAMODB_ITEMS)
 
 module "STANDARD_IAM_ROLE_LAMBDA" {
   source                  = "../modules/iam-role"
