@@ -1,4 +1,40 @@
+# Terraform working directories and provider cache
+**/.terraform/*
+
+# State files (state lives in the S3 backend, never in git)
+*.tfstate
+*.tfstate.*
+
+# Saved plans (may contain secrets; CI stores them in S3)
+*.tfplan
+*.tfplan.*
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Local overrides
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI config (may contain tokens)
+.terraformrc
+terraform.rc
+
+# SSH keys
+iac-standard/src/dev-key
+iac-standard/src/dev-key.pub
+*.pem
+
+# Stray local test files
 copied_file.txt
 file.tf
-dev-standard/src/dev-key
-dev-standard/src/dev-key.pub
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# NOTE: .terraform.lock.hcl is intentionally NOT ignored, commit it to pin provider versions
