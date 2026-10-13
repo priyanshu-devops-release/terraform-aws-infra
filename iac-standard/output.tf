@@ -61,3 +61,19 @@ output "STANDARD_IAM_GROUPS" {
   description = "Created IAM groups"
   value       = var.enable_iam_users_groups_policy ? module.STANDARD_IAM_GROUPS_USERS[0].groups : {}
 }
+
+output "LAMBDA_DYNAMODB_FUNCTION_NAME" {
+  value = module.STANDARD_LAMBDA_DYNAMODB.function_name
+}
+
+output "LAMBDA_DYNAMODB_LOG_GROUP" {
+  value = module.STANDARD_LAMBDA_DYNAMODB.log_group_name
+}
+
+output "LAMBDA_DYNAMODB_ROLE_NAME" {
+  value = module.STANDARD_IAM_ROLE_LAMBDA.role_name
+}
+
+output "DYNAMODB_ITEMS_TABLE_NAME" {
+  value = module.STANDARD_DYNAMODB_ITEMS.table_name
+}

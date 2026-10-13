@@ -274,3 +274,20 @@ variable "grafana_admin_password" {
   type        = string
   default     = ""
 }
+# Lambda + DynamoDB lab variables
+variable "enable_lambda_dynamodb_lab" {
+  description = "Whether to create the Lambda function, execution role and DynamoDB table for the lab"
+  type        = bool
+  default     = false
+}
+
+variable "lambda_dynamodb_access_mode" {
+  description = "DynamoDB permissions for the Lambda role: full, read_only or none (use read_only/none to practice troubleshooting)"
+  type        = string
+  default     = "full"
+
+  validation {
+    condition     = contains(["full", "read_only", "none"], var.lambda_dynamodb_access_mode)
+    error_message = "lambda_dynamodb_access_mode must be one of full, read_only or none."
+  }
+}

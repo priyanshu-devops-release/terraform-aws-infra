@@ -23,7 +23,7 @@ resource "aws_iam_role_policy_attachment" "this" {
 
 # IAM Instance Profile
 resource "aws_iam_instance_profile" "this" {
-  count = var.create_role ? 1 : 0
+  count = var.create_role && var.create_instance_profile ? 1 : 0
   name  = "${var.role_name}-profile"
   role  = aws_iam_role.this[0].name
 }

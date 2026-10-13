@@ -123,3 +123,6 @@ iam_custom_policies = {
     ]
   }
 }
+# Lambda + DynamoDB lab configuration
+enable_lambda_dynamodb_lab  = true
+lambda_dynamodb_access_mode = "read_only" # full | read_only | none
