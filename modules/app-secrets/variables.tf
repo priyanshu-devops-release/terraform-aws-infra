@@ -50,30 +50,6 @@ variable "secret_recovery_window_in_days" {
   default     = 30
 }
 
-variable "create_app_role" {
-  description = "Whether to create an IAM role that can read the secret"
-  type        = bool
-  default     = true
-}
-
-variable "app_role_name" {
-  description = "Name of the app IAM role"
-  type        = string
-  default     = null
-}
-
-variable "app_role_service" {
-  description = "AWS service principal allowed to assume the app role"
-  type        = string
-  default     = "ec2.amazonaws.com"
-}
-
-variable "create_instance_profile" {
-  description = "Whether to create an instance profile for the app role"
-  type        = bool
-  default     = true
-}
-
 variable "tags" {
   description = "Tags applied to all resources"
   type        = map(string)

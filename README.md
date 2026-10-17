@@ -28,7 +28,7 @@ modules/                                  Reusable child modules
 | `cloudfront`, `sns` | CDN / SNS topic |
 | `dynamodb`, `lambda` | Lambda + DynamoDB lab |
 | `eso` | SSM parameters and IAM policy for External Secrets Operator |
-| `app-secrets` | KMS key, Secrets Manager secret, read-only app role |
+| `app-secrets` | KMS key and Secrets Manager secret (IAM access is granted in `iam.tf`) |
 
 ## Prerequisites
 

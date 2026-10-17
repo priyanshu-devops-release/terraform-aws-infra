@@ -7,7 +7,6 @@ module "STANDARD_APP_SECRETS" {
   secret_name_suffix             = "db-secret"
   secret_values                  = { username = var.app_db_username, password = coalesce(var.app_db_password, "unset") }
   secret_recovery_window_in_days = var.app_secret_recovery_window_in_days
-  app_role_name                  = "${var.environment}-app-secrets-role"
   tags = {
     Environment = var.environment
     Terraform   = "true"
