@@ -18,7 +18,7 @@ module "STANDARD_IAM_ROLE_S3" {
         Principal = {
           Service = "ec2.amazonaws.com"
         }
-        resource = "arn:aws:s3:::${module.STANDARD_S3_BUCKET.s3_bucket_name}/*"
+        resource = "arn:aws:s3:::${module.STANDARD_S3_HELM_CHARTS.s3_bucket_name}/*"
       }
     ]
   })
