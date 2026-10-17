@@ -291,3 +291,28 @@ variable "lambda_dynamodb_access_mode" {
     error_message = "lambda_dynamodb_access_mode must be one of full, read_only or none."
   }
 }
+
+variable "enable_app_secrets" {
+  description = "Create the KMS key, DB secret and app read role"
+  type        = bool
+  default     = false
+}
+
+variable "app_db_username" {
+  description = "DB username stored in the app secret"
+  type        = string
+  default     = "booking_app"
+}
+
+variable "app_db_password" {
+  description = "DB password stored in the app secret (supply via TF_VAR_app_db_password)"
+  type        = string
+  sensitive   = true
+  default     = null
+}
+
+variable "app_secret_recovery_window_in_days" {
+  description = "Secret recovery window; 0 allows immediate deletion (lab only)"
+  type        = number
+  default     = 30
+}
