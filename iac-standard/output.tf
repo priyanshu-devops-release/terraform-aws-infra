@@ -85,7 +85,3 @@ output "APP_SECRET_ARN" {
 output "APP_KMS_KEY_ARN" {
   value = module.STANDARD_APP_SECRETS.key_arn
 }
-
-output "APP_SECRETS_ROLE_NAME" {
-  value = module.STANDARD_APP_SECRETS.app_role_name
-}

@@ -21,6 +21,27 @@ module "STANDARD_IAM_ROLE_S3" {
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   ]
 
+  # Read-only access to the app DB secret and its KMS key
+  create_inline_policy = var.enable_app_secrets
+  inline_policy_name   = "read-db-secret"
+  inline_policy = var.enable_app_secrets ? jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid      = "ReadOneSecret"
+        Effect   = "Allow"
+        Action   = ["secretsmanager:GetSecretValue"]
+        Resource = module.STANDARD_APP_SECRETS.secret_arn
+      },
+      {
+        Sid      = "DecryptWithAppKey"
+        Effect   = "Allow"
+        Action   = ["kms:Decrypt"]
+        Resource = module.STANDARD_APP_SECRETS.key_arn
+      }
+    ]
+  }) : null
+
   tags = {
     Environment = var.environment
     name        = "${var.environment}-s3-role"
