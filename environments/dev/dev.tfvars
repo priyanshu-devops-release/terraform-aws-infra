@@ -124,5 +124,9 @@ iam_custom_policies = {
   }
 }
 # Lambda + DynamoDB lab configuration
-enable_lambda_dynamodb_lab  = true
+enable_lambda_dynamodb_lab  = false
 lambda_dynamodb_access_mode = "read_only" # full | read_only | none
+
+# App secrets (KMS + Secrets Manager) - password via TF_VAR_app_db_password
+enable_app_secrets                 = true
+app_secret_recovery_window_in_days = 0

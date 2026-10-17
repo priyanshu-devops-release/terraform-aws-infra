@@ -77,3 +77,15 @@ output "LAMBDA_DYNAMODB_ROLE_NAME" {
 output "DYNAMODB_ITEMS_TABLE_NAME" {
   value = module.STANDARD_DYNAMODB_ITEMS.table_name
 }
+
+output "APP_SECRET_ARN" {
+  value = module.STANDARD_APP_SECRETS.secret_arn
+}
+
+output "APP_KMS_KEY_ARN" {
+  value = module.STANDARD_APP_SECRETS.key_arn
+}
+
+output "APP_SECRETS_ROLE_NAME" {
+  value = module.STANDARD_APP_SECRETS.app_role_name
+}
