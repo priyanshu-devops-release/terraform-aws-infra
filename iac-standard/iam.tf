@@ -11,14 +11,6 @@ module "STANDARD_IAM_ROLE_S3" {
         Principal = {
           Service = "ec2.amazonaws.com"
         }
-      },
-      {
-        Action = ["s3:GetObject", "s3:PutObject", "s3:ListBucket", "s3:DeleteObject"]
-        Effect = "Allow"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-        resource = "arn:aws:s3:::${module.STANDARD_S3_HELM_CHARTS.s3_bucket_name}/*"
       }
     ]
   })
@@ -29,26 +21,42 @@ module "STANDARD_IAM_ROLE_S3" {
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   ]
 
-  # Read-only access to the app DB secret and its KMS key
-  create_inline_policy = var.enable_app_secrets
-  inline_policy_name   = "read-db-secret"
-  inline_policy = var.enable_app_secrets ? jsonencode({
+  # Scoped S3 access to the helm-charts bucket, plus read-only access to the app DB secret and its KMS key
+  create_inline_policy = var.create_bucket || var.enable_app_secrets
+  inline_policy_name   = "app-role-inline-policy"
+  inline_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
-        Sid      = "ReadOneSecret"
-        Effect   = "Allow"
-        Action   = ["secretsmanager:GetSecretValue"]
-        Resource = module.STANDARD_APP_SECRETS.secret_arn
-      },
-      {
-        Sid      = "DecryptWithAppKey"
-        Effect   = "Allow"
-        Action   = ["kms:Decrypt"]
-        Resource = module.STANDARD_APP_SECRETS.key_arn
-      }
-    ]
-  }) : null
+    Statement = concat(
+      var.create_bucket ? [
+        {
+          Sid      = "ListHelmChartsBucket"
+          Effect   = "Allow"
+          Action   = ["s3:ListBucket"]
+          Resource = module.STANDARD_S3_HELM_CHARTS.bucket_arn
+        },
+        {
+          Sid      = "ObjectAccessHelmChartsBucket"
+          Effect   = "Allow"
+          Action   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+          Resource = "${module.STANDARD_S3_HELM_CHARTS.bucket_arn}/*"
+        }
+      ] : [],
+      var.enable_app_secrets ? [
+        {
+          Sid      = "ReadOneSecret"
+          Effect   = "Allow"
+          Action   = ["secretsmanager:GetSecretValue"]
+          Resource = module.STANDARD_APP_SECRETS.secret_arn
+        },
+        {
+          Sid      = "DecryptWithAppKey"
+          Effect   = "Allow"
+          Action   = ["kms:Decrypt"]
+          Resource = module.STANDARD_APP_SECRETS.key_arn
+        }
+      ] : []
+    )
+  })
 
   tags = {
     Environment = var.environment
