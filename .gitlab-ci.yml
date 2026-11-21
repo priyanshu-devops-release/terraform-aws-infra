@@ -93,8 +93,8 @@ terraform_plan:
   needs:
     - terraform_validate
   script:
-    - test -f "../environments/$ENVIRONMENT/$ENVIRONMENT.tfvars" || (echo "ERROR: tfvars not found for $ENVIRONMENT"; exit 1)
-    - test -f "../environments/$ENVIRONMENT/$ENVIRONMENT-remotestate.conf" || (echo "ERROR: backend config not found for $ENVIRONMENT"; exit 1)
+    - 'test -f "../environments/$ENVIRONMENT/$ENVIRONMENT.tfvars" || (echo "ERROR: tfvars not found for $ENVIRONMENT"; exit 1)'
+    - 'test -f "../environments/$ENVIRONMENT/$ENVIRONMENT-remotestate.conf" || (echo "ERROR: backend config not found for $ENVIRONMENT"; exit 1)'
     - terraform init -upgrade "-backend-config=../environments/$ENVIRONMENT/$ENVIRONMENT-remotestate.conf"
     - terraform plan "-var-file=../environments/$ENVIRONMENT/$ENVIRONMENT.tfvars" -out="$ENVIRONMENT.tfplan"
     - test -f "$ENVIRONMENT.tfplan"
@@ -120,9 +120,9 @@ terraform_security:
       aud: $CI_SERVER_URL
   script:
     - apk add --no-cache aws-cli curl
-    - test -n "$AWS_OIDC_ROLE" || (echo "ERROR: AWS_OIDC_ROLE is required"; exit 1)
-    - test -n "$GITLAB_OIDC_TOKEN" || (echo "ERROR: GITLAB_OIDC_TOKEN is unavailable; configure an id_token"; exit 1)
-    - test -n "$TF_PLANS_BUCKET" || (echo "ERROR: TF_PLANS_BUCKET is required"; exit 1)
+    - 'test -n "$AWS_OIDC_ROLE" || (echo "ERROR: AWS_OIDC_ROLE is required"; exit 1)'
+    - 'test -n "$GITLAB_OIDC_TOKEN" || (echo "ERROR: GITLAB_OIDC_TOKEN is unavailable; configure an id_token"; exit 1)'
+    - 'test -n "$TF_PLANS_BUCKET" || (echo "ERROR: TF_PLANS_BUCKET is required"; exit 1)'
     - echo "$GITLAB_OIDC_TOKEN" > "$CI_PROJECT_DIR/.gitlab-oidc-token"
     - export AWS_ROLE_ARN="$AWS_OIDC_ROLE"
     - export AWS_WEB_IDENTITY_TOKEN_FILE="$CI_PROJECT_DIR/.gitlab-oidc-token"
@@ -146,12 +146,12 @@ terraform_apply:
   needs:
     - terraform_validate
   script:
-    - test -n "$PLAN_RUN_ID" || (echo "ERROR: PLAN_RUN_ID is required when applying"; exit 1)
-    - test -n "$TF_PLANS_BUCKET" || (echo "ERROR: TF_PLANS_BUCKET is required"; exit 1)
+    - 'test -n "$PLAN_RUN_ID" || (echo "ERROR: PLAN_RUN_ID is required when applying"; exit 1)'
+    - 'test -n "$TF_PLANS_BUCKET" || (echo "ERROR: TF_PLANS_BUCKET is required"; exit 1)'
     - export S3_PLAN_KEY="terraform-plans/$ENVIRONMENT/$PLAN_RUN_ID/terraform.tfplan"
     - aws s3 cp "s3://$TF_PLANS_BUCKET/$S3_PLAN_KEY" "$ENVIRONMENT.tfplan" --no-progress
-    - test -f "$ENVIRONMENT.tfplan" || (echo "ERROR: Terraform plan download failed"; exit 1)
-    - test -f "../environments/$ENVIRONMENT/$ENVIRONMENT-remotestate.conf" || (echo "ERROR: backend config not found for $ENVIRONMENT"; exit 1)
+    - 'test -f "$ENVIRONMENT.tfplan" || (echo "ERROR: Terraform plan download failed"; exit 1)'
+    - 'test -f "../environments/$ENVIRONMENT/$ENVIRONMENT-remotestate.conf" || (echo "ERROR: backend config not found for $ENVIRONMENT"; exit 1)'
     - terraform init -upgrade "-backend-config=../environments/$ENVIRONMENT/$ENVIRONMENT-remotestate.conf"
     - echo "Applying saved Terraform plan for $ENVIRONMENT"
     - terraform apply -input=false "$ENVIRONMENT.tfplan"
