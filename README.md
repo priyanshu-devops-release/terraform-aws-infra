@@ -7,7 +7,8 @@ Every component is behind a feature flag, so `dev.tfvars` decides what is actual
 ## Repository layout
 
 ```
-.github/workflows/terraform-actions.yml   CI: validate / plan / apply
+.github/workflows/terraform-actions.yml   GitHub Actions: validate / plan / apply
+.gitlab-ci.yml                            GitLab CI: validate / plan / apply
 environments/<env>/                       <env>.tfvars + <env>-remotestate.conf (only dev exists)
 iac-standard/                             Root module (run Terraform here)
   src/                                    Lambda zip, readable copy of EC2 user data
@@ -95,11 +96,32 @@ Required repository configuration:
 | `EC2_PUBLIC_KEY` | secret | SSH public key for the instance |
 | `SLACK_WEBHOOK_URL` | secret | Notifications |
 
+GitLab CI ([pipeline](.gitlab-ci.yml)):
+
+- **Push to `master`:** format check, `init -backend=false`, `validate`.
+- **Manual web pipeline, `plan`:** plans the selected environment, runs Trivy HIGH/CRITICAL misconfiguration checks, and uploads the plan to S3 under `terraform-plans/<env>/<pipeline_id>/`.
+- **Manual web pipeline, `apply`:** set `ENVIRONMENT`, `TF_ACTION=apply`, and `PLAN_RUN_ID` to the pipeline ID that created the plan. Downloads and applies that exact plan.
+- **Protected environment:** configure `terraform-apply-<env>` with approval requirements in GitLab Settings > CI/CD > Protected environments.
+
+Required GitLab CI/CD variables:
+
+| Name | Type | Purpose |
+|---|---|---|
+| `AWS_OIDC_ROLE` | protected/masked variable | IAM role assumed through GitLab OIDC |
+| `AWS_REGION` | variable | Region for AWS auth (defaults to `us-west-2` in `.gitlab-ci.yml`) |
+| `TF_PLANS_BUCKET` | protected/masked variable | Bucket for saved plans |
+| `EC2_PUBLIC_KEY` | masked variable | SSH public key for the instance |
+| `APP_DB_PASSWORD` or `TF_VAR_app_db_password` | masked variable | Optional app database password when `enable_app_secrets=true` |
+| `SLACK_WEBHOOK_URL` | protected/masked variable | Notifications |
+
+Configure the AWS IAM role trust policy to accept GitLab OIDC tokens from this project and set the role audience to the GitLab server URL (`CI_SERVER_URL`, for example `https://gitlab.com`). Restrict the trust policy by subject or project claims for production.
+
 ## Adding an environment
 
 1. Create `environments/<env>/<env>.tfvars` and `<env>-remotestate.conf` (distinct state `key`).
 2. Create the matching `terraform-apply-<env>` GitHub environment.
-3. Run the workflow with the new environment.
+3. Create the matching `terraform-apply-<env>` protected environment in GitLab.
+4. Run the GitHub workflow or GitLab web pipeline with the new environment.
 
 ## Notes and cautions
 
