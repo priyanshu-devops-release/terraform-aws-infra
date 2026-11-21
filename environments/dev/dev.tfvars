@@ -9,7 +9,9 @@ public_subnets     = ["10.0.1.0/24", "10.0.2.0/24"]
 private_subnets    = ["10.0.101.0/24", "10.0.102.0/24"]
 
 # IAM Role configuration
-create_role = true
+create_role                    = true
+enable_iam_users_groups_policy = false
+iam_attach_read_only_policy    = false
 
 
 # EKS Cluster configuration
@@ -24,7 +26,7 @@ pb_enable_public_sg      = true
 pb_enable_elastic_ip     = false
 enable_ssm_endpoint      = false
 enable_all_ssm_endpoints = false
-pb_enable_public_ip      = true
+pb_enable_public_ip      = false
 pb_enable_alb_sg         = false
 pb_enable_alb            = false
 pb_enable_ami_id         = "ami-03d548a9064c31703" # Amazon Linux 2 AMI (HVM), SSD Volume Type
@@ -39,12 +41,92 @@ key_name        = "aws-access-key"
 
 
 # S3 Bucket configuration
-create_bucket      = true
-create_acl         = false
-acl                = "private"
-create_versioning  = false
-versioning_enabled = false
-create_encryption  = true
+create_bucket              = true
+create_acl                 = false
+acl                        = "private"
+create_versioning          = false
+versioning_enabled         = false
+create_encryption          = true
+enable_public_access_block = false
 
 # CloudFront configuration
 enable_cloudfront = false
+
+# ESO configuration
+enable_eso                   = true
+enable_iam_policy            = true
+jenkins_github_client_id     = "demo-jenkins-github-client-id"
+jenkins_github_client_secret = "demo-jenkins-github-client-secret"
+grafana_admin_password       = "demo-grafana-admin-password"
+
+
+# IAM Users configuration
+iam_read_only_group_name = ["devops", "developers"]
+
+iam_users = {
+  "priyanshub.devops" = {
+    full_name = "Priyanshu"
+    email     = "priyanshu@company.com"
+    groups    = ["devops"]
+  }
+  "john.developer" = {
+    full_name = "John Smith"
+    email     = "john@company.com"
+    groups    = ["developers"]
+  }
+  "sarah.engineer" = {
+    full_name = "Sarah Johnson"
+    email     = "sarah@company.com"
+    groups    = ["developers"]
+  }
+  "mike.devops" = {
+    full_name = "Mike Davis"
+    email     = "mike@company.com"
+    groups    = ["devops"]
+  }
+  "alice.analyst" = {
+    full_name = "Alice Smith"
+    email     = "alice@company.com"
+    groups    = ["devops"]
+  }
+}
+
+# Custom IAM Policies configuration
+iam_custom_policies = {
+  devops = {
+    policy_json = <<-POLICY
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:Describe*",
+              "ec2:Get*",
+              "logs:Describe*",
+              "logs:Get*"
+            ],
+            "Resource": "*"
+          }
+        ]
+      }
+    POLICY
+
+    policy_arns = [
+      "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+    ]
+  }
+
+  developers = {
+    policy_arns = [
+      "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+    ]
+  }
+}
+# Lambda + DynamoDB lab configuration
+enable_lambda_dynamodb_lab  = false
+lambda_dynamodb_access_mode = "read_only" # full | read_only | none
+
+# App secrets (KMS + Secrets Manager) - password via TF_VAR_app_db_password
+enable_app_secrets                 = true
+app_secret_recovery_window_in_days = 0

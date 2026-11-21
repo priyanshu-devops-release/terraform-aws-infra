@@ -135,6 +135,11 @@ variable "create_encryption" {
   default     = false
 }
 
+variable "enable_public_access_block" {
+  description = "Whether to create public access block configuration"
+  type        = bool
+  default     = false
+}
 variable "create_acl" {
   description = "Whether to create ACL configuration"
   type        = bool
@@ -152,6 +157,49 @@ variable "create_role" {
   description = "Whether to create the IAM role"
   type        = bool
   default     = false
+}
+
+variable "enable_iam_users_groups_policy" {
+  description = "Whether to create IAM users, groups, and group policies"
+  type        = bool
+  default     = true
+}
+
+variable "iam_users" {
+  description = "IAM users and groups to create"
+  type = map(object({
+    full_name = string
+    email     = string
+    groups    = list(string)
+  }))
+  default = {}
+}
+
+variable "iam_console_password_length" {
+  description = "Length of generated IAM console passwords"
+  type        = number
+  default     = 16
+}
+
+variable "iam_attach_read_only_policy" {
+  description = "Attach AWS ReadOnlyAccess to every IAM user"
+  type        = bool
+  default     = false
+}
+
+variable "iam_read_only_group_name" {
+  description = "IAM groups that receive AWS ReadOnlyAccess"
+  type        = set(string)
+  default     = []
+}
+
+variable "iam_custom_policies" {
+  description = "Custom policy JSON and existing policy ARNs keyed by IAM group name"
+  type = map(object({
+    policy_json = optional(string)
+    policy_arns = optional(set(string), [])
+  }))
+  default = {}
 }
 
 # SSM Session Manager variable
@@ -179,4 +227,92 @@ variable "enable_cloudfront" {
   description = "Whether to create the CloudFront distribution"
   type        = bool
   default     = false
+}
+
+# ESO / SSM variables
+variable "enable_eso" {
+  description = "Whether to create ESO IAM policy and SSM parameters"
+  type        = bool
+  default     = false
+}
+
+variable "enable_iam_policy" {
+  description = "Whether to create IAM policy for ESO SSM read access"
+  type        = bool
+  default     = false
+}
+variable "eso_parameter_path_prefix" {
+  description = "SSM path prefix for External Secrets Operator parameters"
+  type        = string
+  default     = "/platform"
+}
+
+variable "eso_kms_key_arn" {
+  description = "Optional customer-managed KMS key ARN for SecureString SSM parameters"
+  type        = string
+  default     = null
+}
+
+variable "eso_secret_parameters" {
+  description = "SecureString SSM parameters keyed by relative path (example: jenkins/github/client-id)"
+  type        = map(string)
+  default     = {}
+}
+
+variable "jenkins_github_client_id" {
+  description = "GitHub client ID for Jenkins"
+  type        = string
+  default     = ""
+}
+variable "jenkins_github_client_secret" {
+  description = "GitHub client secret for Jenkins"
+  type        = string
+  default     = ""
+}
+variable "grafana_admin_password" {
+  description = "Admin password for Grafana"
+  type        = string
+  default     = ""
+}
+# Lambda + DynamoDB lab variables
+variable "enable_lambda_dynamodb_lab" {
+  description = "Whether to create the Lambda function, execution role and DynamoDB table for the lab"
+  type        = bool
+  default     = false
+}
+
+variable "lambda_dynamodb_access_mode" {
+  description = "DynamoDB permissions for the Lambda role: full, read_only or none (use read_only/none to practice troubleshooting)"
+  type        = string
+  default     = "full"
+
+  validation {
+    condition     = contains(["full", "read_only", "none"], var.lambda_dynamodb_access_mode)
+    error_message = "lambda_dynamodb_access_mode must be one of full, read_only or none."
+  }
+}
+
+variable "enable_app_secrets" {
+  description = "Create the KMS key, DB secret and app read role"
+  type        = bool
+  default     = false
+}
+
+variable "app_db_username" {
+  description = "DB username stored in the app secret"
+  type        = string
+  default     = "booking_app"
+}
+
+variable "app_db_password" {
+  description = "DB password stored in the app secret (supply via TF_VAR_app_db_password)"
+  type        = string
+  sensitive   = true
+  default     = null
+}
+
+variable "app_secret_recovery_window_in_days" {
+  description = "Secret recovery window; 0 allows immediate deletion (lab only)"
+  type        = number
+  default     = 30
 }

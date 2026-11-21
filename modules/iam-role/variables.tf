@@ -54,6 +54,12 @@ variable "permissions_boundary" {
   default     = null
 }
 
+variable "create_instance_profile" {
+  description = "Whether to create an EC2 instance profile for the role (disable for non-EC2 roles such as Lambda)"
+  type        = bool
+  default     = true
+}
+
 # Policy attachments
 variable "policy_arns" {
   description = "List of policy ARNs to attach to the role"
