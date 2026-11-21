@@ -13,34 +13,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Mirror repository to GitLab
+      - name: Validate GitLab credentials
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          if [ -z "$GITLAB_TOKEN" ]; then
+            echo "ERROR: GITLAB_TOKEN secret is missing or unavailable."
+            exit 1
+          fi
+          echo "GitLab token is available."
+
+      - name: Clone GitHub repository
         env:
           GH_TOKEN: ${{ github.token }}
+        run: |
+          git clone --mirror \
+            "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" \
+            mirror.git
+
+      - name: Push to GitLab
+        working-directory: mirror.git
+        env:
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
-          SOURCE_REPO: ${{ github.repository }}
+          GITLAB_GROUP: your-gitlab-group
           REPO_NAME: ${{ github.event.repository.name }}
-          GITLAB_GROUP: platform-engineering-admin-group
+          GIT_TERMINAL_PROMPT: "0"
         run: |
           set -euo pipefail
 
-          echo "Cloning GitHub repository..."
-
-          git clone --mirror \
-            "https://x-access-token:${GH_TOKEN}@github.com/${SOURCE_REPO}.git" \
-            mirror.git
-
-          cd mirror.git
-
-          echo "Preparing GitLab authentication..."
-
-          AUTH=$(printf 'oauth2:%s' "$GITLAB_TOKEN" | base64 -w0)
-
-          git config http.https://gitlab.com/.extraheader \
-            "AUTHORIZATION: basic ${AUTH}"
-
-          echo "Pushing repository to GitLab..."
+          if [ -z "$GITLAB_TOKEN" ]; then
+            echo "Missing GitLab token."
+            exit 1
+          fi
 
           git push --mirror \
-            "https://gitlab.com/${GITLAB_GROUP}/${REPO_NAME}.git"
+            "https://oauth2:${GITLAB_TOKEN}@gitlab.com/${GITLAB_GROUP}/${REPO_NAME}.git"
 
-          echo "Synchronization completed successfully!"
+          echo "GitHub to GitLab sync successful!"
