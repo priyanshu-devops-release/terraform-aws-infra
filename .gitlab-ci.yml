@@ -6,20 +6,10 @@ variables:
   AWS_REGION: "us-west-2"
   ENVIRONMENT:
     value: "dev"
-    options:
-      - "dev"
-      - "staging"
-      - "prod"
-    description: "Deployment environment"
   TF_ACTION:
     value: "plan"
-    options:
-      - "plan"
-      - "apply"
-    description: "Action to run"
   PLAN_RUN_ID:
     value: ""
-    description: "GitLab pipeline ID used to create or locate the saved plan"
 
 stages:
   - validate
@@ -43,16 +33,16 @@ stages:
     entrypoint: [""]
   before_script:
     - apk add --no-cache aws-cli curl
-    - test -n "$AWS_OIDC_ROLE" || (echo "ERROR: AWS_OIDC_ROLE is required"; exit 1)
-    - test -n "$GITLAB_OIDC_TOKEN" || (echo "ERROR: GITLAB_OIDC_TOKEN is unavailable; configure an id_token"; exit 1)
+    - 'test -n "$AWS_OIDC_ROLE" || (echo "ERROR: AWS_OIDC_ROLE is required"; exit 1)'
+    - 'test -n "$GITLAB_OIDC_TOKEN" || (echo "ERROR: GITLAB_OIDC_TOKEN is unavailable; configure an id_token"; exit 1)'
     - echo "$GITLAB_OIDC_TOKEN" > "$CI_PROJECT_DIR/.gitlab-oidc-token"
     - export AWS_ROLE_ARN="$AWS_OIDC_ROLE"
     - export AWS_WEB_IDENTITY_TOKEN_FILE="$CI_PROJECT_DIR/.gitlab-oidc-token"
     - export AWS_DEFAULT_REGION="$AWS_REGION"
     - export AWS_REGION="$AWS_REGION"
     - export TF_VAR_public_key="$EC2_PUBLIC_KEY"
-    - test -n "$TF_VAR_public_key" || (echo "ERROR: EC2_PUBLIC_KEY is required"; exit 1)
-    - if [ -z "$TF_VAR_app_db_password" ] && [ -n "$APP_DB_PASSWORD" ]; then export TF_VAR_app_db_password="$APP_DB_PASSWORD"; fi
+    - 'test -n "$TF_VAR_public_key" || (echo "ERROR: EC2_PUBLIC_KEY is required"; exit 1)'
+    - 'if [ -z "$TF_VAR_app_db_password" ] && [ -n "$APP_DB_PASSWORD" ]; then export TF_VAR_app_db_password="$APP_DB_PASSWORD"; fi'
     - cd iac-standard
   after_script:
     - |
