@@ -1,0 +1,46 @@
+
+name: Sync GitHub to GitLab
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Mirror repository to GitLab
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          SOURCE_REPO: ${{ github.repository }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          GITLAB_GROUP: platform-engineering-admin-group
+        run: |
+          set -euo pipefail
+
+          echo "Cloning GitHub repository..."
+
+          git clone --mirror \
+            "https://x-access-token:${GH_TOKEN}@github.com/${SOURCE_REPO}.git" \
+            mirror.git
+
+          cd mirror.git
+
+          echo "Preparing GitLab authentication..."
+
+          AUTH=$(printf 'oauth2:%s' "$GITLAB_TOKEN" | base64 -w0)
+
+          git config http.https://gitlab.com/.extraheader \
+            "AUTHORIZATION: basic ${AUTH}"
+
+          echo "Pushing repository to GitLab..."
+
+          git push --mirror \
+            "https://gitlab.com/${GITLAB_GROUP}/${REPO_NAME}.git"
+
+          echo "Synchronization completed successfully!"
