@@ -96,7 +96,7 @@ fix_oidc_sub_claim:
       RESULT=$(curl --fail --silent --show-error --request PUT \
         --header "PRIVATE-TOKEN: $GITLAB_ADMIN_TOKEN" \
         --header "Content-Type: application/json" \
-        --data '{"ci_id_token_sub_claim_components":["project_id","project_path","ref_type","ref"]}' \
+        --data '{"ci_id_token_sub_claim_components":["project_id","ref_type","ref"]}' \
         "$CI_API_V4_URL/projects/$CI_PROJECT_ID" | jq -c '.ci_id_token_sub_claim_components')
       echo "sub claim components: $RESULT"
       echo "$RESULT" | grep -q '^\["project_id"' || (echo "ERROR: setting not applied"; exit 1)
