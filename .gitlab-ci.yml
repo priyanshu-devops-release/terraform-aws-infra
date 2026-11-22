@@ -44,6 +44,8 @@ stages:
 # Only master may use the single OIDC role (trust policy: ref:master)
 .master-only-rules:
   rules:
+    - if: '$FIX_OIDC_SUB == "true"'   # TEMP: skip during fix pipeline
+      when: never
     - if: '$CI_COMMIT_BRANCH == "master" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web")'
 
 .aws-terraform:
@@ -55,7 +57,7 @@ stages:
     entrypoint: [""]
   id_tokens:
     GITLAB_OIDC_TOKEN:
-      aud: sts.amazonaws.com    # CHANGED: must match trust policy gitlab.com:aud
+      aud: sts.amazonaws.com
   before_script:
     - apk add --no-cache aws-cli curl
     - 'test -n "$AWS_OIDC_ROLE" || (echo "ERROR: AWS_OIDC_ROLE is required"; exit 1)'
@@ -78,6 +80,27 @@ stages:
     - 'test -f "../environments/$ENVIRONMENT/$ENVIRONMENT-remotestate.conf" || (echo "ERROR: backend config not found for $ENVIRONMENT"; exit 1)'
     - terraform init -reconfigure "-backend-config=../environments/$ENVIRONMENT/$ENVIRONMENT-remotestate.conf"
 
+# TEMP: one-time fix for "ID token issuance is disabled".
+# Run: Build > Pipelines > Run pipeline on master with FIX_OIDC_SUB=true.
+# Remove this job + GITLAB_ADMIN_TOKEN variable and revoke the PAT after success.
+fix_oidc_sub_claim:
+  stage: validate
+  image: alpine:3.20
+  needs: []
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "web" && $FIX_OIDC_SUB == "true"'
+  script:
+    - apk add --no-cache curl jq
+    - 'test -n "$GITLAB_ADMIN_TOKEN" || (echo "ERROR: GITLAB_ADMIN_TOKEN not set"; exit 1)'
+    - |
+      RESULT=$(curl --fail --silent --show-error --request PUT \
+        --header "PRIVATE-TOKEN: $GITLAB_ADMIN_TOKEN" \
+        --header "Content-Type: application/json" \
+        --data '{"ci_id_token_sub_claim_components":["project_id","project_path","ref_type","ref"]}' \
+        "$CI_API_V4_URL/projects/$CI_PROJECT_ID" | jq -c '.ci_id_token_sub_claim_components')
+      echo "sub claim components: $RESULT"
+      echo "$RESULT" | grep -q '^\["project_id"' || (echo "ERROR: setting not applied"; exit 1)
+
 terraform_validate:
   stage: validate
   extends:
@@ -94,6 +117,8 @@ terraform_validate:
     - terraform init -backend=false
     - terraform validate
   rules:
+    - if: '$FIX_OIDC_SUB == "true"'   # TEMP: skip during fix pipeline
+      when: never
     - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
 
@@ -101,7 +126,7 @@ terraform_plan:
   stage: plan
   extends:
     - .aws-terraform
-    - .master-only-rules       # CHANGED: master only (single role)
+    - .master-only-rules
   needs:
     - terraform_validate
   script:
@@ -122,7 +147,7 @@ terraform_security:
   image:
     name: aquasec/trivy:${TRIVY_VERSION}
     entrypoint: [""]
-  needs:                       # CHANGED: plan is skipped on non-master web pipelines
+  needs:
     - job: terraform_plan
       optional: true
       artifacts: false
@@ -134,6 +159,8 @@ terraform_security:
     paths:
       - trivy-results.json
   rules:
+    - if: '$FIX_OIDC_SUB == "true"'   # TEMP: skip during fix pipeline
+      when: never
     - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
 
@@ -150,6 +177,8 @@ terraform_apply:
     - echo "Applying saved Terraform plan for $ENVIRONMENT"
     - terraform apply -input=false "$ENVIRONMENT.tfplan"
   rules:
+    - if: '$FIX_OIDC_SUB == "true"'   # TEMP: skip during fix pipeline
+      when: never
     - if: '$CI_COMMIT_BRANCH == "master" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web")'
       when: manual
   environment:
