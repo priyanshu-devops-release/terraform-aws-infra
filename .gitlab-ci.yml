@@ -7,9 +7,9 @@ variables:
   ENVIRONMENT:
     value: "dev"
     options:
-      - "Dev"
-      - "Staging"
-      - "Production"
+      - "dev"
+      - "staging"
+      - "prod"
     description: "Deployment environment"
 
 
