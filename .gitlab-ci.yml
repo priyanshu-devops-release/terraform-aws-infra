@@ -44,8 +44,6 @@ stages:
 # Only master may use the single OIDC role (trust policy: ref:master)
 .master-only-rules:
   rules:
-    - if: '$FIX_OIDC_SUB == "true"'   # TEMP: skip during fix pipeline
-      when: never
     - if: '$CI_COMMIT_BRANCH == "master" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web")'
 
 .aws-terraform:
@@ -57,7 +55,7 @@ stages:
     entrypoint: [""]
   id_tokens:
     GITLAB_OIDC_TOKEN:
-      aud: sts.amazonaws.com
+      aud: sts.amazonaws.com    # must match IAM provider audience + trust policy gitlab.com:aud
   before_script:
     - apk add --no-cache aws-cli curl
     - 'test -n "$AWS_OIDC_ROLE" || (echo "ERROR: AWS_OIDC_ROLE is required"; exit 1)'
@@ -67,11 +65,6 @@ stages:
     - export AWS_WEB_IDENTITY_TOKEN_FILE=/tmp/.gitlab-oidc-token
     - export AWS_ROLE_SESSION_NAME="gitlab-${CI_PROJECT_ID}-${CI_JOB_ID}"
     - export AWS_DEFAULT_REGION="$AWS_REGION"
-    # TEMP: print aud + sub claims only (never the token). Remove once AssumeRole works.
-    - |
-      P=$(echo "$GITLAB_OIDC_TOKEN" | cut -d. -f2 | tr '_-' '/+')
-      while [ $(( ${#P} % 4 )) -ne 0 ]; do P="${P}="; done
-      echo "$P" | base64 -d 2>/dev/null | grep -oE '"(sub|aud)":"[^"]*"' || true
     - aws sts get-caller-identity
     - export TF_VAR_public_key="$EC2_PUBLIC_KEY"
     - 'test -n "$TF_VAR_public_key" || (echo "ERROR: EC2_PUBLIC_KEY is required"; exit 1)'
@@ -79,33 +72,6 @@ stages:
     - cd iac-standard
     - 'test -f "../environments/$ENVIRONMENT/$ENVIRONMENT-remotestate.conf" || (echo "ERROR: backend config not found for $ENVIRONMENT"; exit 1)'
     - terraform init -reconfigure "-backend-config=../environments/$ENVIRONMENT/$ENVIRONMENT-remotestate.conf"
-
-# TEMP: one-time fix for "ID token issuance is disabled".
-# Run: Build > Pipelines > Run pipeline on master with FIX_OIDC_SUB=true.
-# Remove this job + GITLAB_ADMIN_TOKEN variable and revoke the PAT after success.
-fix_oidc_sub_claim:
-  stage: validate
-  image: alpine:3.20
-  needs: []
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "web" && $FIX_OIDC_SUB == "true"'
-  script:
-    - apk add --no-cache curl jq
-    - 'test -n "$GITLAB_ADMIN_TOKEN" || (echo "ERROR: GITLAB_ADMIN_TOKEN not set"; exit 1)'
-    # 1. Token scopes and status
-    - echo "== Token info =="
-    - 'curl -s --header "PRIVATE-TOKEN: $GITLAB_ADMIN_TOKEN" "$CI_API_V4_URL/personal_access_tokens/self" | jq "{name, scopes, active, revoked, expires_at}"'
-    # 2. Token owner's role on this project (30=Developer, 40=Maintainer, 50=Owner)
-    - echo "== Role on project =="
-    - 'curl -s --header "PRIVATE-TOKEN: $GITLAB_ADMIN_TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID" | jq ".permissions"'
-    # 3. Attempt update and show GitLab's actual error body
-    - echo "== Update attempt =="
-    - |
-      curl -s -w "\nHTTP %{http_code}\n" --request PUT \
-        --header "PRIVATE-TOKEN: $GITLAB_ADMIN_TOKEN" \
-        --header "Content-Type: application/json" \
-        --data '{"ci_id_token_sub_claim_components":["project_id","ref_type","ref"]}' \
-        "$CI_API_V4_URL/projects/$CI_PROJECT_ID" | jq -R -r '. as $l | (try (fromjson | if has("ci_id_token_sub_claim_components") then {ci_id_token_sub_claim_components} else . end) catch $l)'
 
 terraform_validate:
   stage: validate
@@ -123,8 +89,6 @@ terraform_validate:
     - terraform init -backend=false
     - terraform validate
   rules:
-    - if: '$FIX_OIDC_SUB == "true"'   # TEMP: skip during fix pipeline
-      when: never
     - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
 
@@ -136,7 +100,6 @@ terraform_plan:
   needs:
     - terraform_validate
   script:
-    - echo "$P" | base64 -d 2>/dev/null | grep -oE '"(sub|aud|iss)":"[^"]*"' || true
     - 'test -f "../environments/$ENVIRONMENT/$ENVIRONMENT.tfvars" || (echo "ERROR: tfvars not found for $ENVIRONMENT"; exit 1)'
     - terraform plan "-var-file=../environments/$ENVIRONMENT/$ENVIRONMENT.tfvars" -out="$ENVIRONMENT.tfplan"
     - test -f "$ENVIRONMENT.tfplan"
@@ -166,8 +129,6 @@ terraform_security:
     paths:
       - trivy-results.json
   rules:
-    - if: '$FIX_OIDC_SUB == "true"'   # TEMP: skip during fix pipeline
-      when: never
     - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_PIPELINE_SOURCE == "web"'
 
@@ -184,8 +145,6 @@ terraform_apply:
     - echo "Applying saved Terraform plan for $ENVIRONMENT"
     - terraform apply -input=false "$ENVIRONMENT.tfplan"
   rules:
-    - if: '$FIX_OIDC_SUB == "true"'   # TEMP: skip during fix pipeline
-      when: never
     - if: '$CI_COMMIT_BRANCH == "master" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web")'
       when: manual
   environment:
