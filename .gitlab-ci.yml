@@ -62,6 +62,7 @@ stages:
     - 'test -n "$GITLAB_OIDC_TOKEN" || (echo "ERROR: GITLAB_OIDC_TOKEN is unavailable; configure an id_token"; exit 1)'
     - export AWS_ROLE_ARN="$AWS_OIDC_ROLE"
     - export AWS_WEB_IDENTITY_TOKEN_FILE=/tmp/.gitlab-oidc-token
+    - echo "$GITLAB_OIDC_TOKEN" > /tmp/.gitlab-oidc-token
     - export AWS_ROLE_SESSION_NAME="gitlab-${CI_PROJECT_ID}-${CI_JOB_ID}"
     - export AWS_DEFAULT_REGION="$AWS_REGION"
     - cd iac-standard
