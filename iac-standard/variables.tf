@@ -102,6 +102,7 @@ variable "create_key_pair" {
 variable "public_key" {
   type      = string
   sensitive = true
+  default = ""
 }
 
 variable "root_volume_size" {
