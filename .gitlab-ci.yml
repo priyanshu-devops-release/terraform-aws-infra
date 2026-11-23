@@ -136,6 +136,7 @@ terraform_plan:
   needs:
     - terraform_validate
   script:
+    - echo "$P" | base64 -d 2>/dev/null | grep -oE '"(sub|aud|iss)":"[^"]*"' || true
     - 'test -f "../environments/$ENVIRONMENT/$ENVIRONMENT.tfvars" || (echo "ERROR: tfvars not found for $ENVIRONMENT"; exit 1)'
     - terraform plan "-var-file=../environments/$ENVIRONMENT/$ENVIRONMENT.tfvars" -out="$ENVIRONMENT.tfplan"
     - test -f "$ENVIRONMENT.tfplan"
