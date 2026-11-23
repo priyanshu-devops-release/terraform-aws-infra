@@ -91,17 +91,21 @@ fix_oidc_sub_claim:
     - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "web" && $FIX_OIDC_SUB == "true"'
   script:
     - apk add --no-cache curl jq
-    - 'echo "Branch: $CI_COMMIT_REF_NAME | protected: $CI_COMMIT_REF_PROTECTED"'
-    - 'env | cut -d= -f1 | grep -E "GITLAB_ADMIN|FIX_OIDC" || echo "No matching variable names found"'
     - 'test -n "$GITLAB_ADMIN_TOKEN" || (echo "ERROR: GITLAB_ADMIN_TOKEN not set"; exit 1)'
+    # 1. Token scopes and status
+    - echo "== Token info =="
+    - 'curl -s --header "PRIVATE-TOKEN: $GITLAB_ADMIN_TOKEN" "$CI_API_V4_URL/personal_access_tokens/self" | jq "{name, scopes, active, revoked, expires_at}"'
+    # 2. Token owner's role on this project (30=Developer, 40=Maintainer, 50=Owner)
+    - echo "== Role on project =="
+    - 'curl -s --header "PRIVATE-TOKEN: $GITLAB_ADMIN_TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID" | jq ".permissions"'
+    # 3. Attempt update and show GitLab's actual error body
+    - echo "== Update attempt =="
     - |
-      RESULT=$(curl --fail --silent --show-error --request PUT \
+      curl -s -w "\nHTTP %{http_code}\n" --request PUT \
         --header "PRIVATE-TOKEN: $GITLAB_ADMIN_TOKEN" \
         --header "Content-Type: application/json" \
         --data '{"ci_id_token_sub_claim_components":["project_id","ref_type","ref"]}' \
-        "$CI_API_V4_URL/projects/$CI_PROJECT_ID" | jq -c '.ci_id_token_sub_claim_components')
-      echo "sub claim components: $RESULT"
-      echo "$RESULT" | grep -q '^\["project_id"' || (echo "ERROR: setting not applied"; exit 1)
+        "$CI_API_V4_URL/projects/$CI_PROJECT_ID" | jq -R -r '. as $l | (try (fromjson | if has("ci_id_token_sub_claim_components") then {ci_id_token_sub_claim_components} else . end) catch $l)'
 
 terraform_validate:
   stage: validate
