@@ -111,6 +111,7 @@ Required GitLab CI/CD variables:
 | `AWS_REGION` | variable | Region for AWS auth (defaults to `us-west-2` in `.gitlab-ci.yml`) |
 | `EC2_PUBLIC_KEY` | masked variable | SSH public key for the instance |
 | `APP_DB_PASSWORD` or `TF_VAR_app_db_password` | masked variable | Optional app database password when `enable_app_secrets=true` |
+| `TF_VAR_trusted_ingress_cidrs` | optional variable | JSON list of IPv4 CIDRs allowed to reach security-group ingress ports; unset means no inbound access |
 | `SLACK_WEBHOOK_URL` | protected/masked variable | Notifications |
 
 Configure the AWS IAM role trust policy to accept GitLab OIDC tokens from this project and set the role audience to the GitLab server URL (`CI_SERVER_URL`, for example `https://gitlab.com`). Restrict the trust policy by subject or project claims for production.
@@ -124,7 +125,7 @@ Configure the AWS IAM role trust policy to accept GitLab OIDC tokens from this p
 
 ## Notes and cautions
 
-- The security groups open SSH, the k3s API and NodePorts to `0.0.0.0/0`. This is lab-grade; restrict before real use.
+- Security-group ingress is denied by default. Set `TF_VAR_trusted_ingress_cidrs` to a JSON list of trusted IPv4 CIDRs to allow access; all configured ingress ports, including app ports, remain restricted to those ranges.
 - EC2 user data comes from the base64 `EC2_USER_DATA` variable in tfvars. `iac-standard/src/userdata.sh` is only a readable reference; editing it changes nothing.
 - Secret values passed to Terraform end up in state. Keep the state bucket private and encrypted.
 - State locking uses S3 native lockfiles (`use_lockfile = true`).

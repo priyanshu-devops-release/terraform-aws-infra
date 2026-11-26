@@ -66,6 +66,18 @@ variable "pb_enable_private_sg" {
   type    = bool
   default = false
 }
+
+variable "trusted_ingress_cidrs" {
+  description = "IPv4 CIDRs allowed to reach configured security-group ingress ports; empty denies all inbound traffic"
+  type        = list(string)
+  default     = []
+
+  validation {
+    condition     = alltrue([for cidr in var.trusted_ingress_cidrs : can(cidrnetmask(cidr)) && cidr != "0.0.0.0/0"])
+    error_message = "Each trusted_ingress_cidrs entry must be a valid IPv4 CIDR other than 0.0.0.0/0."
+  }
+}
+
 variable "pb_enable_alb" {
   type    = bool
   default = false

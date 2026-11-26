@@ -26,7 +26,7 @@ Terraform (AWS, `us-west-2`) repo for a DevOps lab/dev environment. Provider `ha
 - Lambda lab: `lambda_dynamodb_access_mode` = `full | read_only | none` controls the inline DynamoDB policy on the Lambda role (deliberately yields AccessDenied in lesser modes). Table and Lambda share the `enable_lambda_dynamodb_lab` flag.
 - `modules/app-secrets` (KMS key + Secrets Manager secret; the read policy is an inline policy on `STANDARD_IAM_ROLE_S3` in `iam.tf`) is wired in `app-secrets.tf`, gated by `enable_app_secrets`; the password comes from `TF_VAR_app_db_password`, never tfvars.
 - IAM users/groups/policies are gated by `enable_iam_users_groups_policy`; users and custom policies come from `iam_users` / `iam_custom_policies` tfvars.
-- Security groups currently open SSH/K3s API/NodePort to `0.0.0.0/0` — lab setup, tighten before anything real.
+- Security-group ingress defaults to deny all; `trusted_ingress_cidrs` allows the configured ingress ports only from trusted IPv4 ranges.
 
 ## Commands
 
