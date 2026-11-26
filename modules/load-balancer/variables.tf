@@ -27,6 +27,6 @@ variable "target_instance_id" {
 }
 
 variable "tags" {
-  type = map(string)
+  type    = map(string)
   default = {}
 }

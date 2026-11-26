@@ -7,8 +7,8 @@ locals {
 
 data "aws_iam_policy_document" "this" {
   statement {
-    sid     = "ReadPlatformParameters"
-    effect  = "Allow"
+    sid    = "ReadPlatformParameters"
+    effect = "Allow"
     actions = [
       "ssm:GetParameter",
       "ssm:GetParameters",
@@ -18,8 +18,8 @@ data "aws_iam_policy_document" "this" {
   }
 
   statement {
-    sid     = "DescribeParameters"
-    effect  = "Allow"
+    sid    = "DescribeParameters"
+    effect = "Allow"
     actions = [
       "ssm:DescribeParameters",
     ]
@@ -30,8 +30,8 @@ data "aws_iam_policy_document" "this" {
     for_each = var.kms_key_arn == null ? [] : [var.kms_key_arn]
 
     content {
-      sid     = "DecryptSecureStringParameters"
-      effect  = "Allow"
+      sid    = "DecryptSecureStringParameters"
+      effect = "Allow"
       actions = [
         "kms:Decrypt",
         "kms:DescribeKey",
@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "this" {
 }
 
 resource "aws_iam_policy" "this" {
-  count      = var.create_iam_policy ? 1 : 0
+  count       = var.create_iam_policy ? 1 : 0
   name        = "${var.environment}-eso-ssm-read"
   description = "Read-only access to ESO SSM parameters under ${local.parameter_prefix}"
   policy      = data.aws_iam_policy_document.this.json
@@ -55,7 +55,7 @@ resource "aws_iam_role_policy_attachment" "this" {
 }
 
 resource "aws_ssm_parameter" "secret_parameters" {
-  for_each = var.create_secret_parameters && var.secret_parameters != null ? var.secret_parameters : {}
+  for_each    = var.create_secret_parameters && var.secret_parameters != null ? var.secret_parameters : {}
   name        = "${local.parameter_prefix}/${trim(each.key, "/")}"
   description = "Secret parameter for ESO: ${each.key}"
   type        = "SecureString"
@@ -70,7 +70,7 @@ resource "aws_ssm_parameter" "secret_parameters" {
     ]
   }
 
-  tags  = merge(var.tags, {
+  tags = merge(var.tags, {
     Environment = var.environment
     Terraform   = "true"
     Scope       = "secret"

@@ -1,6 +1,6 @@
 resource "aws_iam_role" "cluster_role" {
   count = var.create_cluster ? 1 : 0
-  name = "${var.cluster_name}-cluster-role"
+  name  = "${var.cluster_name}-cluster-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -15,7 +15,7 @@ resource "aws_iam_role" "cluster_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_policy" {
-  count = var.create_cluster ? 1 : 0
+  count      = var.create_cluster ? 1 : 0
   role       = aws_iam_role.cluster_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
@@ -38,7 +38,7 @@ resource "aws_eks_cluster" "this" {
 
 resource "aws_iam_role" "node_role" {
   count = var.create_cluster ? 1 : 0
-  name = "${var.cluster_name}-node-role"
+  name  = "${var.cluster_name}-node-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -53,19 +53,19 @@ resource "aws_iam_role" "node_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "worker_node_policy" {
-  count = var.create_cluster ? 1 : 0
+  count      = var.create_cluster ? 1 : 0
   role       = aws_iam_role.node_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
 }
 
 resource "aws_iam_role_policy_attachment" "cni_policy" {
-  count = var.create_cluster ? 1 : 0
+  count      = var.create_cluster ? 1 : 0
   role       = aws_iam_role.node_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
 
 resource "aws_iam_role_policy_attachment" "ecr_policy" {
-  count = var.create_cluster ? 1 : 0
+  count      = var.create_cluster ? 1 : 0
   role       = aws_iam_role.node_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
