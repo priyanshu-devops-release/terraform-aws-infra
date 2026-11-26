@@ -21,7 +21,7 @@ Terraform (AWS, `us-west-2`) repo for a DevOps lab/dev environment. Provider `ha
 
 ## Key wiring
 
-- EC2 (`t4g.medium`, in first public subnet) uses `STANDARD_PUBLIC_SG` and the instance profile from `STANDARD_IAM_ROLE_S3` (S3 full, CloudWatch agent, SSM core). ESO's IAM policy attaches to the same role.
+- EC2 (`t4g.medium`, in first public subnet) uses `STANDARD_PUBLIC_SG` and the instance profile from `STANDARD_IAM_ROLE_S3` (S3 full, AWS read-only, CloudWatch agent, SSM core). ESO's IAM policy attaches to the same role.
 - ESO module writes SSM parameters from `jenkins_github_*` / `grafana_admin_password` tfvars (demo placeholder values only; never commit real secrets).
 - Lambda lab: `lambda_dynamodb_access_mode` = `full | read_only | none` controls the inline DynamoDB policy on the Lambda role (deliberately yields AccessDenied in lesser modes). Table and Lambda share the `enable_lambda_dynamodb_lab` flag.
 - `modules/app-secrets` (KMS key + Secrets Manager secret; the read policy is an inline policy on `STANDARD_IAM_ROLE_S3` in `iam.tf`) is wired in `app-secrets.tf`, gated by `enable_app_secrets`; the password comes from `TF_VAR_app_db_password`, never tfvars.
