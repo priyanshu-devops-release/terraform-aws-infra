@@ -329,3 +329,12 @@ variable "app_secret_recovery_window_in_days" {
   type        = number
   default     = 30
 }
+
+
+
+# KMS variables
+variable "create_kms_key" {
+  description = "Whether to create a new KMS key"
+  type        = bool
+  default     = false
+}

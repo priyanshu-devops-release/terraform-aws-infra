@@ -130,3 +130,7 @@ lambda_dynamodb_access_mode = "read_only" # full | read_only | none
 # App secrets (KMS + Secrets Manager) - password via TF_VAR_app_db_password
 enable_app_secrets                 = false
 app_secret_recovery_window_in_days = 0
+
+
+# KMS configuration
+create_kms_key = true
