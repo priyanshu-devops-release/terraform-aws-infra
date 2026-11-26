@@ -119,7 +119,7 @@ terraform_plan:
     name: terraform-plan-$ENVIRONMENT
     action: prepare
 
-terraform_security:
+terraform_security_scan:
   stage: security
   image:
     name: aquasec/trivy:${TRIVY_VERSION}
@@ -146,7 +146,7 @@ terraform_apply:
   resource_group: terraform-$ENVIRONMENT
   needs:
     - terraform_plan
-    - terraform_security
+    - terraform_security_scan
   script:
     - 'test -f "$ENVIRONMENT.tfplan" || (echo "ERROR: Terraform plan download failed"; exit 1)'
     - echo "Applying saved Terraform plan for $ENVIRONMENT"
