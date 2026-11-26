@@ -118,6 +118,8 @@ Configure the AWS IAM role trust policy to accept GitLab OIDC tokens from this p
 
 The state bucket's default encryption uses a dedicated customer-managed KMS key. Apply the key and bucket encryption using the current backend configuration first. Then, from `iac-standard`, get the ARN with `terraform output -raw STANDARD_KMS_KEY` and grant the GitLab/GitHub OIDC role `kms:Encrypt`, `kms:Decrypt`, and `kms:GenerateDataKey` on it. These are the S3 backend's KMS use permissions; the account-root key-policy statement remains for key administration and IAM delegation. Add `kms_key_id = "<key ARN>"` to `environments/dev/dev-remotestate.conf` and run `terraform init -reconfigure -backend-config=../environments/dev/dev-remotestate.conf` so Terraform state and lock files also use the customer-managed key.
 
+The GitLab **Run pipeline** form exposes an optional `PLAN_TARGET` field. Enter a Terraform resource address such as `module.STANDARD_KMS_KEY` for a targeted plan, or leave it empty for a full plan. Use targeted plans only for exceptional bootstrap operations because they omit unrelated resources.
+
 ## Adding an environment
 
 1. Create `environments/<env>/<env>.tfvars` and `<env>-remotestate.conf` (distinct state `key`).
