@@ -13,7 +13,7 @@ variables:
     description: "Deployment environment"
   PLAN_TARGET:
     value: ""
-    description: "Optional Terraform resource address to target; leave empty for a full plan"
+    description: "Optional space-separated Terraform resource addresses to target; leave empty for a full plan"
 
 stages:
   - validate
@@ -101,11 +101,14 @@ terraform_plan:
   script:
     - 'test -f "../environments/$ENVIRONMENT/$ENVIRONMENT.tfvars" || (echo "ERROR: tfvars not found for $ENVIRONMENT"; exit 1)'
     - |
+      set -f
+      set --
       if [ -n "$PLAN_TARGET" ]; then
-        terraform plan "-target=$PLAN_TARGET" "-var-file=../environments/$ENVIRONMENT/$ENVIRONMENT.tfvars" -out="$ENVIRONMENT.tfplan"
-      else
-        terraform plan "-var-file=../environments/$ENVIRONMENT/$ENVIRONMENT.tfvars" -out="$ENVIRONMENT.tfplan"
+        for target in $PLAN_TARGET; do
+          set -- "$@" "-target=$target"
+        done
       fi
+      terraform plan "$@" "-var-file=../environments/$ENVIRONMENT/$ENVIRONMENT.tfvars" -out="$ENVIRONMENT.tfplan"
     - test -f "$ENVIRONMENT.tfplan"
   artifacts:
     expire_in: 1 day
