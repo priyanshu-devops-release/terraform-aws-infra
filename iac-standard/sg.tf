@@ -17,7 +17,7 @@ module "STANDARD_PUBLIC_SG" {
       from_port   = 8080
       to_port     = 8080
       protocol    = "tcp"
-      cidr_blocks = var.trusted_ingress_cidrs
+      cidr_blocks = ["0.0.0.0/0"]
     },
     {
       name        = "K3s API"
