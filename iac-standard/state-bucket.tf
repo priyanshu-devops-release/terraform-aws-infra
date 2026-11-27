@@ -1,8 +1,12 @@
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "pb-dev-state-bucket"
+  bucket = "${var.environment}-state-bucket"
 
   lifecycle {
     prevent_destroy = true
+  }
+  tags = {
+    Name        = "${var.environment}-state-bucket"
+    Environment = var.environment
   }
 }
 
