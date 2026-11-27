@@ -38,14 +38,14 @@ module "STANDARD_PUBLIC_SG" {
       from_port   = 80
       to_port     = 80
       protocol    = "tcp"
-      cidr_blocks = var.trusted_ingress_cidrs
+      cidr_blocks = ["0.0.0.0/0"]
     },
     {
       name        = "ALB"
       from_port   = 443
       to_port     = 443
       protocol    = "tcp"
-      cidr_blocks = var.trusted_ingress_cidrs
+      cidr_blocks = ["0.0.0.0/0"]
     }
   ]
 
