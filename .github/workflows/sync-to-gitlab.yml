@@ -1,0 +1,52 @@
+
+name: Sync GitHub to GitLab
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate GitLab credentials
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          if [ -z "$GITLAB_TOKEN" ]; then
+            echo "ERROR: GITLAB_TOKEN secret is missing or unavailable."
+            exit 1
+          fi
+          echo "GitLab token is available."
+
+      - name: Clone GitHub repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git clone --mirror \
+            "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" \
+            mirror.git
+
+      - name: Push to GitLab
+        working-directory: mirror.git
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          GITLAB_GROUP: platform-engineering-admin-group
+          REPO_NAME: ${{ github.event.repository.name }}
+          GIT_TERMINAL_PROMPT: "0"
+        run: |
+          set -euo pipefail
+
+          if [ -z "$GITLAB_TOKEN" ]; then
+            echo "Missing GitLab token."
+            exit 1
+          fi
+
+          git push --mirror \
+            "https://oauth2:${GITLAB_TOKEN}@gitlab.com/${GITLAB_GROUP}/${REPO_NAME}.git"
+
+          echo "GitHub to GitLab sync successful!"

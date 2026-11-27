@@ -16,9 +16,10 @@ module "STANDARD_IAM_ROLE_S3" {
   })
 
   policy_arns = [
-    "arn:aws:iam::aws:policy/ReadOnlyAccess",
+    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
     "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
-    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+    "arn:aws:iam::aws:policy/ReadOnlyAccess"
   ]
 
   # Scoped S3 access to the helm-charts bucket, plus read-only access to the app DB secret and its KMS key

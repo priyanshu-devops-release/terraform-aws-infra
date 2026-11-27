@@ -4,13 +4,13 @@ module "STANDARD_PUBLIC_SG" {
   name                  = "${var.environment}-public-sg"
   description           = "Security group for DevOps EC2"
   vpc_id                = module.STANDARD_VPC.vpc_id
-  ingress_rules = [
+  ingress_rules = length(var.trusted_ingress_cidrs) == 0 ? [] : [
     {
       name        = "SSH"
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks = var.trusted_ingress_cidrs
     },
     {
       name        = "HTTP"
@@ -24,14 +24,14 @@ module "STANDARD_PUBLIC_SG" {
       from_port   = 6443
       to_port     = 6443
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks = var.trusted_ingress_cidrs
     },
     {
       name        = "NodePort"
       from_port   = 30000
       to_port     = 32767
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks = var.trusted_ingress_cidrs
     },
     {
       name        = "ALB"
@@ -64,25 +64,25 @@ module "STANDARD_ALB_SG" {
   description           = "ALB Security Group"
   vpc_id                = module.STANDARD_VPC.vpc_id
 
-  ingress_rules = [
+  ingress_rules = length(var.trusted_ingress_cidrs) == 0 ? [] : [
     {
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks = var.trusted_ingress_cidrs
     },
     {
       from_port   = 8080
       to_port     = 8080
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks = var.trusted_ingress_cidrs
     },
     {
       from_port   = 30007
       to_port     = 30007
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    },
+      cidr_blocks = var.trusted_ingress_cidrs
+    }
   ]
 
   tags = {
@@ -98,13 +98,13 @@ module "STANDARD_PRIVATE_SG" {
   name                  = "${var.environment}-private-sg"
   description           = "Security group for DevOps EC2"
   vpc_id                = module.STANDARD_VPC.vpc_id
-  ingress_rules = [
+  ingress_rules = length(var.trusted_ingress_cidrs) == 0 ? [] : [
     {
       name        = "HTTPS"
       from_port   = 443
       to_port     = 443
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks = var.trusted_ingress_cidrs
     },
   ]
 

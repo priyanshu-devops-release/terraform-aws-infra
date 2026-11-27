@@ -1,4 +1,4 @@
-# terraform-dev
+# IAC STACK WITH TERRAFORM
 
 Terraform code for a small AWS DevOps lab environment in `us-west-2`: networking, an EC2 host running k3s + ArgoCD, optional EKS, IAM, S3, a Lambda + DynamoDB lab, SSM parameters for External Secrets Operator, and a KMS-encrypted Secrets Manager secret.
 
@@ -99,9 +99,9 @@ Required repository configuration:
 GitLab CI ([pipeline](.gitlab-ci.yml)):
 
 - **Push to `master`:** format check, `init -backend=false`, `validate`.
-- **Manual web pipeline, `plan`:** plans the selected environment, runs Trivy HIGH/CRITICAL misconfiguration checks, and uploads the plan to S3 under `terraform-plans/<env>/<pipeline_id>/`.
-- **Manual web pipeline, `apply`:** set `ENVIRONMENT`, `TF_ACTION=apply`, and `PLAN_RUN_ID` to the pipeline ID that created the plan. Downloads and applies that exact plan.
-- **Protected environment:** configure `terraform-apply-<env>` with approval requirements in GitLab Settings > CI/CD > Protected environments.
+- **On each push to `master`:** format check, validate, Trivy HIGH/CRITICAL checks, and Terraform plan run automatically.
+- **Terraform apply:** use the manual Play button in the same pipeline. Apply uses the plan artifact from that commit and requires protected-environment approval.
+- **Protected environment:** configure `terraform-apply-<env>` with required approvers in GitLab Settings > CI/CD > Protected environments. The apply job is also serialized by `resource_group` for the selected environment.
 
 Required GitLab CI/CD variables:
 
@@ -109,12 +109,16 @@ Required GitLab CI/CD variables:
 |---|---|---|
 | `AWS_OIDC_ROLE` | protected/masked variable | IAM role assumed through GitLab OIDC |
 | `AWS_REGION` | variable | Region for AWS auth (defaults to `us-west-2` in `.gitlab-ci.yml`) |
-| `TF_PLANS_BUCKET` | protected/masked variable | Bucket for saved plans |
 | `EC2_PUBLIC_KEY` | masked variable | SSH public key for the instance |
 | `APP_DB_PASSWORD` or `TF_VAR_app_db_password` | masked variable | Optional app database password when `enable_app_secrets=true` |
+| `TF_VAR_trusted_ingress_cidrs` | optional variable | JSON list of IPv4 CIDRs allowed to reach security-group ingress ports; unset means no inbound access |
 | `SLACK_WEBHOOK_URL` | protected/masked variable | Notifications |
 
 Configure the AWS IAM role trust policy to accept GitLab OIDC tokens from this project and set the role audience to the GitLab server URL (`CI_SERVER_URL`, for example `https://gitlab.com`). Restrict the trust policy by subject or project claims for production.
+
+The state bucket's default encryption uses a dedicated customer-managed KMS key. Apply the key and bucket encryption using the current backend configuration first. Then, from `iac-standard`, get the ARN with `terraform output -raw STANDARD_KMS_KEY` and grant the GitLab/GitHub OIDC role `kms:Encrypt`, `kms:Decrypt`, and `kms:GenerateDataKey` on it. These are the S3 backend's KMS use permissions; the account-root key-policy statement remains for key administration and IAM delegation. Add `kms_key_id = "<key ARN>"` to `environments/dev/dev-remotestate.conf` and run `terraform init -reconfigure -backend-config=../environments/dev/dev-remotestate.conf` so Terraform state and lock files also use the customer-managed key.
+
+The GitLab **Run pipeline** form exposes an optional `PLAN_TARGET` field. Enter one or more valid Terraform resource addresses separated by spaces, such as `aws_s3_bucket.terraform_state aws_s3_bucket_versioning.terraform_state module.STANDARD_KMS_KEY.aws_kms_key.this[0]`, or leave it empty for a full plan. Terraform addresses do not include a `resource.` prefix. Use targeted plans only for exceptional bootstrap operations because they omit unrelated resources.
 
 ## Adding an environment
 
@@ -125,7 +129,7 @@ Configure the AWS IAM role trust policy to accept GitLab OIDC tokens from this p
 
 ## Notes and cautions
 
-- The security groups open SSH, the k3s API and NodePorts to `0.0.0.0/0`. This is lab-grade; restrict before real use.
+- Security-group ingress is denied by default. Set `TF_VAR_trusted_ingress_cidrs` to a JSON list of trusted IPv4 CIDRs to allow access; all configured ingress ports, including app ports, remain restricted to those ranges.
 - EC2 user data comes from the base64 `EC2_USER_DATA` variable in tfvars. `iac-standard/src/userdata.sh` is only a readable reference; editing it changes nothing.
 - Secret values passed to Terraform end up in state. Keep the state bucket private and encrypted.
 - State locking uses S3 native lockfiles (`use_lockfile = true`).
