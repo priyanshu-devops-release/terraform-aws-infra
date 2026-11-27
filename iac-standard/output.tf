@@ -11,7 +11,7 @@ output "DEV_VPC" {
   value = module.STANDARD_VPC.vpc_id
 }
 
-output "DEV_EC2" {
+output "STANDARD_EC2" {
   value = module.STANDARD_EC2.public_ip
 }
 
