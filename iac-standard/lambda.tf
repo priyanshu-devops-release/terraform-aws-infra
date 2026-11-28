@@ -22,6 +22,7 @@ module "STANDARD_IAM_ROLE_LAMBDA" {
   create_role             = var.enable_lambda_dynamodb_lab
   create_instance_profile = false
   role_name               = "${var.environment}-lambda-dynamodb-role"
+  permissions_boundary    = aws_iam_policy.app_permissions_boundary.arn
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [

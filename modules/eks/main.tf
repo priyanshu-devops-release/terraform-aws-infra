@@ -1,6 +1,7 @@
 resource "aws_iam_role" "cluster_role" {
-  count = var.create_cluster ? 1 : 0
-  name  = "${var.cluster_name}-cluster-role"
+  count                = var.create_cluster ? 1 : 0
+  name                 = "${var.cluster_name}-cluster-role"
+  permissions_boundary = var.permissions_boundary
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -37,8 +38,9 @@ resource "aws_eks_cluster" "this" {
 }
 
 resource "aws_iam_role" "node_role" {
-  count = var.create_cluster ? 1 : 0
-  name  = "${var.cluster_name}-node-role"
+  count                = var.create_cluster ? 1 : 0
+  name                 = "${var.cluster_name}-node-role"
+  permissions_boundary = var.permissions_boundary
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
