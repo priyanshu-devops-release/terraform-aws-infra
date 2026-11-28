@@ -80,6 +80,6 @@ resource "aws_key_pair" "this_key" {
     var.tags
   )
   lifecycle {
-    ignore_changes = public_key
+    ignore_changes = [public_key]
   }
 }
