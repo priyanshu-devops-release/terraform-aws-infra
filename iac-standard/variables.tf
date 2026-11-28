@@ -82,10 +82,29 @@ variable "pb_enable_alb" {
   type    = bool
   default = false
 }
-variable "pb_enable_elastic_ip" {
+variable "pb_enable_public_ip" {
   type    = bool
   default = false
 }
+
+variable "enable_route53_ec2_dns" {
+  description = "Whether to create a public Route 53 zone and EC2 DNS records"
+  type        = bool
+  default     = false
+}
+
+variable "route53_domain_name" {
+  description = "Existing public domain name to host in Route 53"
+  type        = string
+  default     = ""
+}
+
+variable "route53_ec2_record_names" {
+  description = "Record labels pointing to the EC2 Elastic IP; use @ for the zone apex"
+  type        = set(string)
+  default     = []
+}
+
 variable "pb_enable_ami_id" {
   description = "AMI ID for the EC2 instance"
   type        = string
