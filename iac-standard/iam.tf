@@ -1,7 +1,10 @@
+data "aws_caller_identity" "current" {}
+
 module "STANDARD_IAM_ROLE_S3" {
-  source      = "../modules/iam-role"
-  create_role = var.create_role
-  role_name   = "${var.environment}-role"
+  source               = "../modules/iam-role"
+  create_role          = var.create_role
+  role_name            = "${var.environment}-role"
+  permissions_boundary = aws_iam_policy.app_permissions_boundary.arn
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [

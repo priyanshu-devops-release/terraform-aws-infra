@@ -14,3 +14,8 @@ variable "create_cluster" {
   type    = bool
   default = false
 }
+
+variable "permissions_boundary" {
+  type    = string
+  default = null
+}
