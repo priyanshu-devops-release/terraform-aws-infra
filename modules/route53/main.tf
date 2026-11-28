@@ -10,7 +10,7 @@ resource "aws_route53_zone" "this" {
 
     precondition {
       condition     = var.ec2_enabled && var.enable_public_ip
-      error_message = "Route 53 records require EC2 and its Elastic IP to be enabled."
+      error_message = "Route 53 records require EC2 and its public IP to be enabled."
     }
 
     precondition {

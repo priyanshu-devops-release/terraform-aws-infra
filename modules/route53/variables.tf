@@ -25,6 +25,6 @@ variable "ec2_enabled" {
 }
 
 variable "enable_public_ip" {
-  description = "Whether the EC2 instance has an Elastic IP"
+  description = "Whether the EC2 instance has a public IP address"
   type        = bool
 }

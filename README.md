@@ -33,7 +33,7 @@ modules/                                  Reusable child modules
 
 ## Prerequisites
 
-- Terraform `1.14.3` (CI version; `>= 1.0` required)
+- Terraform `1.14.3` (CI version; `>= 1.1` required)
 - AWS provider `~> 6.0`
 - AWS credentials with access to the state bucket (`pb-dev-state-bucket`) and the target account
 
