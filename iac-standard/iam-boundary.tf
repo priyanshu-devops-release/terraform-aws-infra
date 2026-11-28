@@ -322,9 +322,9 @@ data "aws_iam_policy_document" "app_permissions_boundary" {
   }
 
   statement {
-    sid       = "DenySelfAndOIDCModification"
-    effect    = "Deny"
-    actions   = ["iam:*"]
+    sid     = "DenySelfAndOIDCModification"
+    effect  = "Deny"
+    actions = ["iam:*"]
     resources = [
       "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/github-action",
       "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/*",
