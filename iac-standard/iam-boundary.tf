@@ -36,141 +36,126 @@ data "aws_iam_policy_document" "app_permissions_boundary" {
     ]
   }
 
-  statement {
-    sid    = "AllowEKSClusterControlPlane"
-    effect = "Allow"
-    actions = [
-      "autoscaling:DescribeAutoScalingGroups",
-      "autoscaling:UpdateAutoScalingGroup",
-      "ec2:AttachVolume",
-      "ec2:AuthorizeSecurityGroupIngress",
-      "ec2:CreateRoute",
-      "ec2:CreateSecurityGroup",
-      "ec2:CreateTags",
-      "ec2:CreateVolume",
-      "ec2:DeleteRoute",
-      "ec2:DeleteSecurityGroup",
-      "ec2:DeleteVolume",
-      "ec2:DescribeAccountAttributes",
-      "ec2:DescribeAddresses",
-      "ec2:DescribeAvailabilityZones",
-      "ec2:DescribeDhcpOptions",
-      "ec2:DescribeInstanceTopology",
-      "ec2:DescribeInstances",
-      "ec2:DescribeInternetGateways",
-      "ec2:DescribeNetworkInterfaces",
-      "ec2:DescribeRouteTables",
-      "ec2:DescribeSecurityGroups",
-      "ec2:DescribeSubnets",
-      "ec2:DescribeVolumes",
-      "ec2:DescribeVolumesModifications",
-      "ec2:DescribeVpcs",
-      "ec2:DetachVolume",
-      "ec2:ModifyInstanceAttribute",
-      "ec2:ModifyVolume",
-      "ec2:RevokeSecurityGroupIngress",
-      "elasticloadbalancing:AddTags",
-      "elasticloadbalancing:ApplySecurityGroupsToLoadBalancer",
-      "elasticloadbalancing:AttachLoadBalancerToSubnets",
-      "elasticloadbalancing:ConfigureHealthCheck",
-      "elasticloadbalancing:CreateListener",
-      "elasticloadbalancing:CreateLoadBalancer",
-      "elasticloadbalancing:CreateLoadBalancerListeners",
-      "elasticloadbalancing:CreateLoadBalancerPolicy",
-      "elasticloadbalancing:CreateTargetGroup",
-      "elasticloadbalancing:DeleteListener",
-      "elasticloadbalancing:DeleteLoadBalancer",
-      "elasticloadbalancing:DeleteLoadBalancerListeners",
-      "elasticloadbalancing:DeleteTargetGroup",
-      "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
-      "elasticloadbalancing:DeregisterTargets",
-      "elasticloadbalancing:DescribeListeners",
-      "elasticloadbalancing:DescribeLoadBalancerAttributes",
-      "elasticloadbalancing:DescribeLoadBalancerPolicies",
-      "elasticloadbalancing:DescribeLoadBalancers",
-      "elasticloadbalancing:DescribeTargetGroupAttributes",
-      "elasticloadbalancing:DescribeTargetGroups",
-      "elasticloadbalancing:DescribeTargetHealth",
-      "elasticloadbalancing:DetachLoadBalancerFromSubnets",
-      "elasticloadbalancing:ModifyListener",
-      "elasticloadbalancing:ModifyLoadBalancerAttributes",
-      "elasticloadbalancing:ModifyTargetGroup",
-      "elasticloadbalancing:ModifyTargetGroupAttributes",
-      "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
-      "elasticloadbalancing:RegisterTargets",
-      "elasticloadbalancing:SetLoadBalancerPoliciesForBackendServer",
-      "elasticloadbalancing:SetLoadBalancerPoliciesOfListener",
-      "eks:DescribeCluster",
-      "eks-auth:AssumeRoleForPodIdentity",
-      "kms:DescribeKey",
-    ]
-    resources = ["*"]
-  }
-
-  statement {
-    sid    = "AllowEKSNodeNetworking"
-    effect = "Allow"
-    actions = [
-      "ec2:AssignPrivateIpAddresses",
-      "ec2:AttachNetworkInterface",
-      "ec2:CreateNetworkInterface",
-      "ec2:DescribeInstances",
-      "ec2:DescribeInstanceTypes",
-      "ec2:DescribeNetworkInterfaces",
-      "ec2:DescribeSecurityGroups",
-      "ec2:DescribeSubnets",
-      "ec2:DescribeTags",
-      "ec2:DescribeVolumes",
-      "ec2:DescribeVolumesModifications",
-      "ec2:DescribeVpcs",
-      "ec2:DetachNetworkInterface",
-      "ec2:ModifyNetworkInterfaceAttribute",
-      "ec2:UnassignPrivateIpAddresses",
-    ]
-    resources = ["*"]
-  }
-
-  statement {
-    sid     = "AllowEKSNetworkInterfaceTagging"
-    effect  = "Allow"
-    actions = ["ec2:CreateTags"]
-    resources = [
-      "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:network-interface/*",
-      "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:security-group/*",
-      "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:volume/*",
-    ]
-  }
-
-  statement {
-    sid       = "AllowEKSOwnedNetworkInterfaceCleanup"
-    effect    = "Allow"
-    actions   = ["ec2:DeleteNetworkInterface"]
-    resources = ["*"]
-    condition {
-      test     = "StringEquals"
-      variable = "ec2:ResourceTag/eks:eni:owner"
-      values   = ["amazon-vpc-cni"]
+  dynamic "statement" {
+    for_each = var.pb_enable_dev_eks ? [1] : []
+    content {
+      sid    = "AllowEKSRuntime"
+      effect = "Allow"
+      actions = [
+        "autoscaling:DescribeAutoScalingGroups",
+        "autoscaling:UpdateAutoScalingGroup",
+        "ec2:AssignPrivateIpAddresses",
+        "ec2:AttachNetworkInterface",
+        "ec2:AttachVolume",
+        "ec2:AuthorizeSecurityGroupIngress",
+        "ec2:CreateNetworkInterface",
+        "ec2:CreateRoute",
+        "ec2:CreateSecurityGroup",
+        "ec2:CreateVolume",
+        "ec2:DeleteRoute",
+        "ec2:DeleteSecurityGroup",
+        "ec2:DeleteVolume",
+        "ec2:DescribeAccountAttributes",
+        "ec2:DescribeAddresses",
+        "ec2:DescribeAvailabilityZones",
+        "ec2:DescribeDhcpOptions",
+        "ec2:DescribeInstanceTopology",
+        "ec2:DescribeInstances",
+        "ec2:DescribeInstanceTypes",
+        "ec2:DescribeInternetGateways",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DescribeRouteTables",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeTags",
+        "ec2:DescribeVolumes",
+        "ec2:DescribeVolumesModifications",
+        "ec2:DescribeVpcs",
+        "ec2:DetachNetworkInterface",
+        "ec2:DetachVolume",
+        "ec2:ModifyInstanceAttribute",
+        "ec2:ModifyNetworkInterfaceAttribute",
+        "ec2:ModifyVolume",
+        "ec2:RevokeSecurityGroupIngress",
+        "ec2:UnassignPrivateIpAddresses",
+        "elasticloadbalancing:AddTags",
+        "elasticloadbalancing:ApplySecurityGroupsToLoadBalancer",
+        "elasticloadbalancing:AttachLoadBalancerToSubnets",
+        "elasticloadbalancing:ConfigureHealthCheck",
+        "elasticloadbalancing:CreateListener",
+        "elasticloadbalancing:CreateLoadBalancer",
+        "elasticloadbalancing:CreateLoadBalancerListeners",
+        "elasticloadbalancing:CreateLoadBalancerPolicy",
+        "elasticloadbalancing:CreateTargetGroup",
+        "elasticloadbalancing:DeleteListener",
+        "elasticloadbalancing:DeleteLoadBalancer",
+        "elasticloadbalancing:DeleteLoadBalancerListeners",
+        "elasticloadbalancing:DeleteTargetGroup",
+        "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+        "elasticloadbalancing:DeregisterTargets",
+        "elasticloadbalancing:DescribeListeners",
+        "elasticloadbalancing:DescribeLoadBalancerAttributes",
+        "elasticloadbalancing:DescribeLoadBalancerPolicies",
+        "elasticloadbalancing:DescribeLoadBalancers",
+        "elasticloadbalancing:DescribeTargetGroupAttributes",
+        "elasticloadbalancing:DescribeTargetGroups",
+        "elasticloadbalancing:DescribeTargetHealth",
+        "elasticloadbalancing:DetachLoadBalancerFromSubnets",
+        "elasticloadbalancing:ModifyListener",
+        "elasticloadbalancing:ModifyLoadBalancerAttributes",
+        "elasticloadbalancing:ModifyTargetGroup",
+        "elasticloadbalancing:ModifyTargetGroupAttributes",
+        "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+        "elasticloadbalancing:RegisterTargets",
+        "elasticloadbalancing:SetLoadBalancerPoliciesForBackendServer",
+        "elasticloadbalancing:SetLoadBalancerPoliciesOfListener",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:DescribeImageScanFindings",
+        "ecr:DescribeImages",
+        "ecr:DescribeRepositories",
+        "ecr:GetAuthorizationToken",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetLifecyclePolicy",
+        "ecr:GetLifecyclePolicyPreview",
+        "ecr:GetRepositoryPolicy",
+        "ecr:ListImages",
+        "ecr:ListTagsForResource",
+        "eks:DescribeCluster",
+        "eks-auth:AssumeRoleForPodIdentity",
+        "kms:DescribeKey",
+      ]
+      resources = ["*"]
     }
   }
 
-  statement {
-    sid    = "AllowEKSContainerImagePulls"
-    effect = "Allow"
-    actions = [
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchGetImage",
-      "ecr:DescribeImageScanFindings",
-      "ecr:DescribeImages",
-      "ecr:DescribeRepositories",
-      "ecr:GetAuthorizationToken",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:GetLifecyclePolicy",
-      "ecr:GetLifecyclePolicyPreview",
-      "ecr:GetRepositoryPolicy",
-      "ecr:ListImages",
-      "ecr:ListTagsForResource",
-    ]
-    resources = ["*"]
+  dynamic "statement" {
+    for_each = var.pb_enable_dev_eks ? [1] : []
+    content {
+      sid     = "AllowEKSNetworkInterfaceTagging"
+      effect  = "Allow"
+      actions = ["ec2:CreateTags"]
+      resources = [
+        "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:network-interface/*",
+        "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:security-group/*",
+        "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:volume/*",
+      ]
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.pb_enable_dev_eks ? [1] : []
+    content {
+      sid       = "AllowEKSOwnedNetworkInterfaceCleanup"
+      effect    = "Allow"
+      actions   = ["ec2:DeleteNetworkInterface"]
+      resources = ["*"]
+      condition {
+        test     = "StringEquals"
+        variable = "ec2:ResourceTag/eks:eni:owner"
+        values   = ["amazon-vpc-cni"]
+      }
+    }
   }
 
   statement {
@@ -293,15 +278,18 @@ data "aws_iam_policy_document" "app_permissions_boundary" {
     }
   }
 
-  statement {
-    sid       = "AllowEKSLoadBalancerServiceLinkedRole"
-    effect    = "Allow"
-    actions   = ["iam:CreateServiceLinkedRole"]
-    resources = ["*"]
-    condition {
-      test     = "StringEquals"
-      variable = "iam:AWSServiceName"
-      values   = ["elasticloadbalancing.amazonaws.com"]
+  dynamic "statement" {
+    for_each = var.pb_enable_dev_eks ? [1] : []
+    content {
+      sid       = "AllowEKSLoadBalancerServiceLinkedRole"
+      effect    = "Allow"
+      actions   = ["iam:CreateServiceLinkedRole"]
+      resources = ["*"]
+      condition {
+        test     = "StringEquals"
+        variable = "iam:AWSServiceName"
+        values   = ["elasticloadbalancing.amazonaws.com"]
+      }
     }
   }
 
@@ -355,26 +343,6 @@ data "aws_iam_policy_document" "app_permissions_boundary" {
     ]
   }
 
-  statement {
-    sid    = "DenyRoleChainingAndAccountOrAuditChanges"
-    effect = "Deny"
-    actions = [
-      "account:*",
-      "access-analyzer:Delete*",
-      "cloudtrail:DeleteTrail",
-      "cloudtrail:PutEventSelectors",
-      "cloudtrail:StopLogging",
-      "cloudtrail:UpdateTrail",
-      "config:Delete*",
-      "config:Stop*",
-      "guardduty:*",
-      "organizations:*",
-      "sts:AssumeRole",
-      "sts:AssumeRoleWithSAML",
-      "sts:AssumeRoleWithWebIdentity",
-    ]
-    resources = ["*"]
-  }
 }
 
 resource "aws_iam_policy" "app_permissions_boundary" {
